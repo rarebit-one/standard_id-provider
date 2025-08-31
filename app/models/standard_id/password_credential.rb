@@ -2,7 +2,7 @@ module StandardId
   class PasswordCredential < ApplicationRecord
     has_secure_password
 
-    validates :principal, presence: true, uniqueness: true
+    validates :login, presence: true, uniqueness: true
     validates :password, length: { minimum: 8 }, confirmation: true, if: :validate_password?
 
     private

@@ -31,11 +31,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_232800) do
   end
 
   create_table "standard_id_password_credentials", force: :cascade do |t|
-    t.string "principal", null: false
+    t.string "login", null: false
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["principal"], name: "index_standard_id_password_credentials_on_principal", unique: true
+    t.index ["login"], name: "index_standard_id_password_credentials_on_login", unique: true
   end
 
   add_foreign_key "standard_id_identifiers", "accounts"
