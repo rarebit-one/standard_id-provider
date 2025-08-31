@@ -5,6 +5,7 @@ module StandardId
     let(:account) { Account.create!(name: "Test User", email: "account@example.com") }
 
     it { is_expected.to belong_to(:account) }
+    it { is_expected.to have_many(:credentials) }
 
     describe "validations" do
       it { should validate_presence_of(:value) }

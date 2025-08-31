@@ -2,6 +2,8 @@ module StandardId
   class Identifier < ApplicationRecord
     belongs_to :account, class_name: StandardId.config.account_class_name
 
+    has_many :credentials, class_name: "StandardId::Credential", dependent: :restrict_with_exception
+
     scope :verified, -> { where.not(verified_at: nil) }
     scope :unverified, -> { where(verified_at: nil) }
 

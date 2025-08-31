@@ -1,5 +1,7 @@
 module StandardId
   class PasswordCredential < ApplicationRecord
+    include StandardId::Credentiable
+
     has_secure_password
 
     validates :login, presence: true, uniqueness: true

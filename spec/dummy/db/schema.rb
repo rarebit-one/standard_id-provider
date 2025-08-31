@@ -10,13 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_30_232800) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_31_075703) do
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "standard_id_credentials", force: :cascade do |t|
+    t.integer "identifier_id", null: false
+    t.string "credentialable_type", null: false
+    t.integer "credentialable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["credentialable_type", "credentialable_id"], name: "index_standard_id_credentials_on_credentialable"
+    t.index ["identifier_id"], name: "index_standard_id_credentials_on_identifier_id"
   end
 
   create_table "standard_id_identifiers", force: :cascade do |t|
@@ -38,5 +48,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_232800) do
     t.index ["login"], name: "index_standard_id_password_credentials_on_login", unique: true
   end
 
+  add_foreign_key "standard_id_credentials", "standard_id_identifiers", column: "identifier_id"
   add_foreign_key "standard_id_identifiers", "accounts"
 end
