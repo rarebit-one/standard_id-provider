@@ -10,13 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_30_171553) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_30_232800) do
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "standard_id_identifiers", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.string "type", null: false
+    t.string "value", null: false
+    t.datetime "verified_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "type", "value"], name: "index_standard_id_identifiers_on_account_id_and_type_and_value", unique: true
+    t.index ["account_id"], name: "index_standard_id_identifiers_on_account_id"
   end
 
   create_table "standard_id_password_credentials", force: :cascade do |t|
@@ -27,11 +38,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_171553) do
     t.index ["principal"], name: "index_standard_id_password_credentials_on_principal", unique: true
   end
 
-  create_table "standard_id_provider_identities", force: :cascade do |t|
-    t.string "provider", null: false
-    t.string "uid", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["provider", "uid"], name: "index_standard_id_provider_identities_on_provider_and_uid", unique: true
-  end
+  add_foreign_key "standard_id_identifiers", "accounts"
 end
