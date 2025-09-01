@@ -7,6 +7,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
+require "bcrypt"
 require "rspec/rails"
 require "shoulda/matchers"
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -73,3 +74,5 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+BCrypt::Engine.cost = 1
