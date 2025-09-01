@@ -1,6 +1,7 @@
 module StandardId
   class Credential < ApplicationRecord
     belongs_to :identifier, class_name: "StandardId::Identifier"
-    belongs_to :credentialable, polymorphic: true
+
+    delegated_type :credentialable, types: %w[PasswordCredential]
   end
 end
