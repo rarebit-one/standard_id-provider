@@ -10,13 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_154635) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_134520) do
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "standard_id_client_secret_credentials", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "client_id", null: false
+    t.string "client_secret_digest", null: false
+    t.string "scopes"
+    t.boolean "active", default: true, null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_standard_id_client_secret_credentials_on_client_id", unique: true
   end
 
   create_table "standard_id_credentials", force: :cascade do |t|
