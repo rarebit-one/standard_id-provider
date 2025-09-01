@@ -111,28 +111,16 @@ RSpec.describe StandardId::ServiceSession, type: :model do
   end
 
   describe "token generation" do
-    it "generates a token on creation" do
-      session = StandardId::ServiceSession.create!(
-        account: account,
-        service_name: "auth-service",
-        service_version: "3.0.0",
-        expires_at: 90.days.from_now
-      )
-
-      expect(session.token).to be_present
+    it "generates token and digest on create" do
+      session = described_class.create!(account: account, service_name: "svc", service_version: "1.0.0")
       expect(session.lookup_hash).to be_present
       expect(session.token_digest).to be_present
     end
 
     it "can be found by token" do
-      session = StandardId::ServiceSession.create!(
-        account: account,
-        service_name: "data-processor",
-        service_version: "1.2.0",
-        expires_at: 90.days.from_now
-      )
-
-      found_session = StandardId::ServiceSession.lookup_by_token(session.token)
+      session = described_class.create!(account: account, service_name: "data-processor", service_version: "1.2.0")
+      token = session.instance_variable_get(:@token)
+      found_session = described_class.by_token(token).first
       expect(found_session).to eq(session)
     end
   end

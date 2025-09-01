@@ -5,6 +5,8 @@ module StandardId
     validates :service_name, presence: true
     validates :service_version, presence: true
 
+    before_validation :set_default_expiry, on: :create
+
     def display_name
       "#{service_name} Service Session (v#{service_version})"
     end
@@ -30,6 +32,12 @@ module StandardId
       # Service sessions are never considered stale
       # They're valid until they expire or are revoked
       false
+    end
+
+    private
+
+    def set_default_expiry
+      self.expires_at ||= self.class.default_expiry
     end
   end
 end

@@ -28,11 +28,13 @@ RSpec.describe StandardId::SessionManager do
 
     context "when session token exists" do
       let(:eager_load_relation) { double("EagerLoadRelation") }
+      let(:by_token_relation) { double("ByTokenRelation") }
 
       before do
         session[:session_token] = "valid_token"
         allow(StandardId::BrowserSession).to receive(:eager_load).with(:account).and_return(eager_load_relation)
-        allow(eager_load_relation).to receive(:lookup_by_token).with("valid_token").and_return(browser_session)
+        allow(eager_load_relation).to receive(:by_token).with("valid_token").and_return(by_token_relation)
+        allow(by_token_relation).to receive(:first).and_return(browser_session)
         # Mock Current.session= to actually store the value for subsequent calls
         allow(Current).to receive(:session=) do |value|
           allow(Current).to receive(:session).and_return(value)
@@ -86,11 +88,13 @@ RSpec.describe StandardId::SessionManager do
     context "when session is expired" do
       let(:expired_session) { double("BrowserSession", expired?: true, revoked?: false) }
       let(:eager_load_relation) { double("EagerLoadRelation") }
+      let(:by_token_relation) { double("ByTokenRelation") }
 
       before do
         session[:session_token] = "expired_token"
         allow(StandardId::BrowserSession).to receive(:eager_load).with(:account).and_return(eager_load_relation)
-        allow(eager_load_relation).to receive(:lookup_by_token).with("expired_token").and_return(expired_session)
+        allow(eager_load_relation).to receive(:by_token).with("expired_token").and_return(by_token_relation)
+        allow(by_token_relation).to receive(:first).and_return(expired_session)
       end
 
       it "clears session and returns nil" do
@@ -103,11 +107,13 @@ RSpec.describe StandardId::SessionManager do
     context "when session is revoked" do
       let(:revoked_session) { double("BrowserSession", expired?: false, revoked?: true) }
       let(:eager_load_relation) { double("EagerLoadRelation") }
+      let(:by_token_relation) { double("ByTokenRelation") }
 
       before do
         session[:session_token] = "revoked_token"
         allow(StandardId::BrowserSession).to receive(:eager_load).with(:account).and_return(eager_load_relation)
-        allow(eager_load_relation).to receive(:lookup_by_token).with("revoked_token").and_return(revoked_session)
+        allow(eager_load_relation).to receive(:by_token).with("revoked_token").and_return(by_token_relation)
+        allow(by_token_relation).to receive(:first).and_return(revoked_session)
       end
 
       it "clears session and returns nil" do

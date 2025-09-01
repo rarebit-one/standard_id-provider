@@ -39,7 +39,7 @@ module StandardId
 
     def load_session_from_session_token
       return unless session_token
-      StandardId::BrowserSession.eager_load(:account).lookup_by_token(session_token)
+      StandardId::BrowserSession.eager_load(:account).by_token(session_token).first
     end
 
     def load_session_from_remember_token

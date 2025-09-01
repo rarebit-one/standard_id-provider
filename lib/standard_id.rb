@@ -7,6 +7,9 @@ require "standard_id/errors"
 require "standard_id/session_manager"
 require "standard_id/token_manager"
 require "standard_id/authentication_guard"
+require "standard_id/api_session_manager"
+require "standard_id/api_token_manager"
+require "standard_id/api_authentication_guard"
 
 module StandardId
   class << self

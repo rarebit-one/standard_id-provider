@@ -13,7 +13,6 @@ Rails.application.routes.draw do
     resource :ping, only: [:show]
   end
 
-  # Utility routes for testing
   namespace :util do
     post "/session", to: "session#set"
   end

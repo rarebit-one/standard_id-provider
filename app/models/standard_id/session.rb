@@ -10,14 +10,16 @@ module StandardId
     scope :expired, -> { where("expires_at <= ?", Time.current) }
     scope :revoked, -> { where.not(revoked_at: nil) }
 
+    scope :api_compatible, -> { where(type: ["StandardId::DeviceSession", "StandardId::ServiceSession"]) }
+    scope :by_token, ->(token) {
+      lookup_hash = Digest::SHA256.hexdigest("#{token}:#{Rails.configuration.secret_key_base}")
+      where(lookup_hash:)
+    }
+
     attr_reader :token
 
     before_validation :generate_token, :generate_token_digest, :generate_lookup_hash, on: :create
 
-    def self.lookup_by_token(token)
-      lookup_hash = Digest::SHA256.hexdigest("#{token}:#{Rails.configuration.secret_key_base}")
-      find_by(lookup_hash:)
-    end
 
     def active?
       !revoked? && !expired?
