@@ -13,6 +13,13 @@ class CreateStandardIdSessions < ActiveRecord::Migration[8.0]
       t.datetime :expires_at, null: false
       t.datetime :revoked_at
 
+      if connection.adapter_name.downcase.include?("postgres")
+        t.jsonb :metadata, default: {}, null: false
+        t.index :metadata, using: :gin
+      else
+        t.json :metadata, default: {}, null: false
+      end
+
       # BrowserSession columns
       t.text :user_agent
 
@@ -20,6 +27,11 @@ class CreateStandardIdSessions < ActiveRecord::Migration[8.0]
       t.string :device_id
       t.text :device_agent
       t.datetime :last_refreshed_at
+
+      # ServiceSession columns
+      t.references :owner, polymorphic: true, null: true, index: true
+      t.string :service_name
+      t.string :service_version
 
       t.timestamps
 

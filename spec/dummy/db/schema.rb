@@ -56,10 +56,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_154635) do
     t.string "ip_address"
     t.datetime "expires_at", null: false
     t.datetime "revoked_at"
+    t.json "metadata", default: {}, null: false
     t.text "user_agent"
     t.string "device_id"
     t.text "device_agent"
     t.datetime "last_refreshed_at"
+    t.string "owner_type"
+    t.integer "owner_id"
+    t.string "service_name"
+    t.string "service_version"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id", "type", "expires_at"], name: "idx_on_account_id_type_expires_at_fed5f68be5"
@@ -67,6 +72,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_154635) do
     t.index ["expires_at", "revoked_at"], name: "index_standard_id_sessions_on_expires_at_and_revoked_at"
     t.index ["lookup_hash", "expires_at", "revoked_at"], name: "idx_on_lookup_hash_expires_at_revoked_at_34a4504c19"
     t.index ["lookup_hash"], name: "index_standard_id_sessions_on_lookup_hash", unique: true
+    t.index ["owner_type", "owner_id"], name: "index_standard_id_sessions_on_owner"
     t.index ["type"], name: "index_standard_id_sessions_on_type"
   end
 
