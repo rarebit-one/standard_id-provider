@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  mount StandardId::Engine => "/"
+  mount StandardId::WebEngine => "/"
 
   get "info", to: "public#info"
 
@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
+    mount StandardId::ApiEngine => "/"
+
     resource :ping, only: [:show]
   end
 end

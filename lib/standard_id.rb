@@ -1,5 +1,7 @@
 require "standard_id/version"
 require "standard_id/engine"
+require "standard_id/web_engine"
+require "standard_id/api_engine"
 require "standard_id/config"
 
 module StandardId
