@@ -23,6 +23,12 @@ RSpec.describe StandardId::ServiceSession, type: :model do
       expect(session).not_to be_valid
       expect(session.errors[:service_version]).to include("can't be blank")
     end
+
+    it "validates presence of owner" do
+      session = StandardId::ServiceSession.new(account: account, service_name: "api-gateway", service_version: "1.0.0")
+      expect(session).not_to be_valid
+      expect(session.errors[:owner]).to include("can't be blank")
+    end
   end
 
   describe "instance methods" do
@@ -31,6 +37,7 @@ RSpec.describe StandardId::ServiceSession, type: :model do
         account: account,
         service_name: "payment-processor",
         service_version: "2.1.3",
+        owner: account,
         expires_at: 90.days.from_now
       )
     end
@@ -84,41 +91,42 @@ RSpec.describe StandardId::ServiceSession, type: :model do
   end
 
   describe "session lifecycle" do
-    let(:service_session) do
+    let(:session) do
       StandardId::ServiceSession.create!(
         account: account,
         service_name: "notification-service",
         service_version: "1.5.0",
+        owner: account,
         expires_at: 90.days.from_now
       )
     end
 
     it "is active when created" do
-      expect(service_session.active?).to be true
+      expect(session.active?).to be true
     end
 
     it "becomes inactive when revoked" do
-      service_session.revoke!
-      expect(service_session.active?).to be false
-      expect(service_session.revoked?).to be true
+      session.revoke!
+      expect(session.active?).to be false
+      expect(session.revoked?).to be true
     end
 
     it "becomes inactive when expired" do
-      service_session.update!(expires_at: 1.day.ago)
-      expect(service_session.active?).to be false
-      expect(service_session.expired?).to be true
+      session.update!(expires_at: 1.day.ago)
+      expect(session.active?).to be false
+      expect(session.expired?).to be true
     end
   end
 
   describe "token generation" do
     it "generates token and digest on create" do
-      session = described_class.create!(account: account, service_name: "svc", service_version: "1.0.0")
+      session = described_class.create!(account: account, service_name: "svc", service_version: "1.0.0", owner: account)
       expect(session.lookup_hash).to be_present
       expect(session.token_digest).to be_present
     end
 
     it "can be found by token" do
-      session = described_class.create!(account: account, service_name: "data-processor", service_version: "1.2.0")
+      session = described_class.create!(account: account, service_name: "data-processor", service_version: "1.2.0", owner: account)
       token = session.instance_variable_get(:@token)
       found_session = described_class.by_token(token).first
       expect(found_session).to eq(session)
@@ -126,20 +134,22 @@ RSpec.describe StandardId::ServiceSession, type: :model do
   end
 
   describe "scopes" do
-    let!(:active_session) do
+    let(:service_session) do
       StandardId::ServiceSession.create!(
         account: account,
-        service_name: "active-service",
+        service_name: "test-service",
         service_version: "1.0.0",
+        owner: account,
         expires_at: 30.days.from_now
       )
     end
 
     let!(:expired_session) do
-      StandardId::ServiceSession.create!(
+      session = StandardId::ServiceSession.create!(
         account: account,
         service_name: "expired-service",
         service_version: "1.0.0",
+        owner: account,
         expires_at: 1.day.ago
       )
     end
@@ -147,12 +157,23 @@ RSpec.describe StandardId::ServiceSession, type: :model do
     let!(:revoked_session) do
       session = StandardId::ServiceSession.create!(
         account: account,
-        service_name: "revoked-service",
+        service_name: "test-service",
         service_version: "1.0.0",
+        owner: account,
         expires_at: 30.days.from_now
       )
       session.revoke!
       session
+    end
+
+    let!(:active_session) do
+      StandardId::ServiceSession.create!(
+        account: account,
+        service_name: "active-service",
+        service_version: "1.0.0",
+        owner: account,
+        expires_at: 30.days.from_now
+      )
     end
 
     it "includes active sessions in active scope" do

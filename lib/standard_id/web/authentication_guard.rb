@@ -1,11 +1,10 @@
 module StandardId
   module Web
     class AuthenticationGuard
-      def require_session!(session_manager, session, request)
+      def require_session!(session_manager, session:, request:)
         session[:return_to_after_authenticating] = request.url
 
-        # Load session without clearing it first to detect specific error types
-        browser_session = Current.session || session_manager.load_current_session
+        browser_session = session_manager.current_session
 
         if browser_session.blank?
           raise StandardId::NotAuthenticatedError
@@ -17,13 +16,7 @@ module StandardId
           raise StandardId::RevokedSessionError
         end
 
-        # Set the valid session
-        Current.session = browser_session
-      end
-
-      def after_authentication_url(session)
-        # TODO: add configurable value
-        session.delete(:return_to_after_authenticating) || "/"
+        browser_session
       end
     end
   end

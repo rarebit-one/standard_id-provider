@@ -6,43 +6,31 @@ module StandardId
       helper_method :current_account, :authenticated?
     end
 
+    delegate :current_session, :current_account, :revoke_current_session!, to: :session_manager
+
     private
 
     def authenticated?
       current_account.present?
     end
 
-    def current_account
-      Current.account ||= current_browser_session&.account
-    end
-
-    def current_browser_session
-      session_manager.load_current_session
-    end
-
     def require_browser_session!
-      authentication_guard.require_session!(session_manager, session, request)
+      authentication_guard.require_session!(session_manager, session: session, request: request)
     end
 
     def after_authentication_url
-      authentication_guard.after_authentication_url(session)
+      # TODO: add configurable value
+      session.delete(:return_to_after_authenticating) || "/"
     end
 
-    def sign_in_account(account)
-      token_manager.sign_in_account(account, session_manager)
-    end
-
-    def sign_out_account
-      current_browser_session&.revoke!
-      session_manager.clear_session!
-    end
-
-    def create_remember_token(password_credential)
-      token_manager.create_remember_token(password_credential, cookies)
+    def sign_in_account(login, password)
+      StandardId::PasswordCredential.find_by(login:).authenticate(password).tap do |password_credential|
+        session_manager.sign_in_account(password_credential.account)
+      end
     end
 
     def session_manager
-      @session_manager ||= StandardId::Web::SessionManager.new(session, cookies, request, token_manager)
+      @session_manager ||= StandardId::Web::SessionManager.new(token_manager, request: request, session: session, cookies: cookies)
     end
 
     def token_manager

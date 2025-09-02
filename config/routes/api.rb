@@ -1,3 +1,5 @@
 StandardId::ApiEngine.routes.draw do
-  # API authentication routes will go here
+  namespace :oauth do
+    resource :token, only: [:create]
+  end
 end

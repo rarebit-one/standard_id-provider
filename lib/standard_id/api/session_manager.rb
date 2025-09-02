@@ -1,39 +1,38 @@
 module StandardId
   module Api
     class SessionManager
-      def initialize(request, api_token_manager)
+      def initialize(token_manager, request:)
+        @token_manager = token_manager
         @request = request
-        @api_token_manager = api_token_manager
       end
 
-      def load_current_session
-        return @current_session if @current_session.present?
-
-        token = @api_token_manager.extract_bearer_token
-        return unless token
-
-        session = StandardId::Session.api_compatible.by_token(token).first
-
-        return unless session&.active?
-
-        session.touch(:last_refreshed_at) if session.is_a?(StandardId::DeviceSession)
-
-        @current_session = session
+      def current_session
+        @current_session ||= load_current_session
       end
 
       def current_account
-        load_current_session&.account
+        return unless current_session
+        @current_account ||= StandardId.config.account_class.find_by(id: current_session.account_id)
       end
 
       def revoke_current_session!
-        return unless @current_session
-
-        @current_session.revoke!
-        @current_session = nil
+        clear_session!
       end
 
       def clear_session!
         @current_session = nil
+        @current_account = nil
+      end
+
+      private
+
+      def load_current_session
+        return @current_session if @current_session.present?
+
+        jwt_session = @token_manager.verify_jwt_token
+        return unless jwt_session&.active?
+
+        @current_session = jwt_session
       end
     end
   end

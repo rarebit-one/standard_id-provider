@@ -13,14 +13,14 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
   let(:token_manager) { StandardId::Api::TokenManager.new(request) }
   let(:account) { Account.create!(name: "Test Service", email: "service@example.com") }
 
-  describe "#extract_bearer_token" do
+  describe "#bearer_token" do
     context "when Authorization header is present with Bearer token" do
       it "extracts the token" do
         allow(request).to receive(:headers).and_return({
           'Authorization' => 'Bearer abc123token'
         })
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to eq('abc123token')
       end
 
@@ -29,7 +29,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
           'Authorization' => 'Bearer token_with-special.chars'
         })
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to eq('token_with-special.chars')
       end
     end
@@ -38,7 +38,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
       it "returns nil" do
         allow(request).to receive(:headers).and_return({})
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to be_nil
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
           'Authorization' => 'Basic dXNlcjpwYXNz'
         })
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to be_nil
       end
 
@@ -58,7 +58,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
           'Authorization' => 'InvalidFormat'
         })
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to be_nil
       end
     end
@@ -69,7 +69,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
           'Authorization' => ''
         })
 
-        result = token_manager.extract_bearer_token
+        result = token_manager.bearer_token
         expect(result).to be_nil
       end
     end
@@ -152,7 +152,8 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
       session = token_manager.create_service_session(
         account,
         service_name: "payment-processor",
-        service_version: "1.2.3"
+        service_version: "1.2.3",
+        owner: account
       )
 
       expect(session).to be_a(StandardId::ServiceSession)
@@ -161,7 +162,7 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
       expect(session.service_version).to eq("1.2.3")
       expect(session.ip_address).to eq("192.168.1.100")
       expect(session.metadata).to eq({})
-      expect(session.owner).to be_nil
+      expect(session.owner).to eq(account)
       expect(session.expires_at).to be_within(1.minute).of(StandardId::ServiceSession.default_expiry)
       expect(session).to be_persisted
     end
@@ -172,8 +173,8 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
 
       session = token_manager.create_service_session(
         account,
-        service_name: "notification-service",
-        service_version: "2.0.0",
+        service_name: "analytics",
+        service_version: "2.1.0",
         owner: owner,
         metadata: metadata
       )
@@ -185,8 +186,9 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
     it "handles empty metadata hash" do
       session = token_manager.create_service_session(
         account,
-        service_name: "auth-service",
-        service_version: "1.0.0",
+        service_name: "analytics",
+        service_version: "2.1.0",
+        owner: account,
         metadata: {}
       )
 
@@ -197,7 +199,9 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
       session = token_manager.create_service_session(
         account,
         service_name: "data-service",
-        service_version: "1.5.0"
+        service_version: "1.5.0",
+        owner: account,
+        metadata: nil
       )
 
       expect(session.metadata).to eq({})
@@ -209,8 +213,9 @@ RSpec.describe StandardId::Api::TokenManager, type: :model do
       device_session = token_manager.create_device_session(account)
       service_session = token_manager.create_service_session(
         account,
-        service_name: "test-service",
-        service_version: "1.0.0"
+        service_name: "analytics",
+        service_version: "1.0.0",
+        owner: account
       )
 
       # Test device session lookup

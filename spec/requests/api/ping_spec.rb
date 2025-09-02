@@ -4,18 +4,8 @@ RSpec.describe "API Ping", type: :request do
   let(:account) { Account.create!(name: "Test Service", email: "service@example.com") }
 
   context "when authenticated" do
-    let(:service_session) do
-      StandardId::ServiceSession.create!(
-        account: account,
-        service_name: "test-service",
-        service_version: "1.0.0",
-        expires_at: StandardId::ServiceSession.default_expiry
-      )
-    end
-
-    let(:auth_headers) do
-      { "Authorization" => "Bearer #{service_session.token}" }
-    end
+    let(:jwt) { StandardId::JwtService.encode({ sub: account.id, client_id: "svc-1", scope: "service:read", grant_type: "access_token" }) }
+    let(:auth_headers) { { "Authorization" => "Bearer #{jwt}" } }
 
     describe "GET /api/ping" do
       it "returns 200 and JSON status ok" do

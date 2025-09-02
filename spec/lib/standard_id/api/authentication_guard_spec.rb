@@ -12,12 +12,13 @@ RSpec.describe StandardId::Api::AuthenticationGuard, type: :model do
           account: account,
           service_name: "test-service",
           service_version: "1.0.0",
+          owner: account,
           expires_at: 30.days.from_now
         )
       end
 
       it "returns the session without raising an error" do
-        allow(api_session_manager).to receive(:load_current_session).and_return(active_session)
+        allow(api_session_manager).to receive(:current_session).and_return(active_session)
 
         result = guard.require_session!(api_session_manager)
         expect(result).to eq(active_session)
@@ -26,7 +27,7 @@ RSpec.describe StandardId::Api::AuthenticationGuard, type: :model do
 
     context "when session is blank" do
       it "raises NotAuthenticatedError" do
-        allow(api_session_manager).to receive(:load_current_session).and_return(nil)
+        allow(api_session_manager).to receive(:current_session).and_return(nil)
 
         expect {
           guard.require_session!(api_session_manager)
@@ -40,13 +41,14 @@ RSpec.describe StandardId::Api::AuthenticationGuard, type: :model do
           account: account,
           service_name: "expired-service",
           service_version: "1.0.0",
+          owner: account,
           expires_at: 1.day.ago
         )
       end
 
       it "clears the session and raises ExpiredSessionError" do
-        allow(api_session_manager).to receive(:load_current_session).and_return(expired_session)
-        expect(api_session_manager).to receive(:clear_session!)
+        allow(api_session_manager).to receive(:current_session).and_return(expired_session)
+        allow(api_session_manager).to receive(:clear_session!)
 
         expect {
           guard.require_session!(api_session_manager)
@@ -60,6 +62,7 @@ RSpec.describe StandardId::Api::AuthenticationGuard, type: :model do
           account: account,
           service_name: "revoked-service",
           service_version: "1.0.0",
+          owner: account,
           expires_at: 30.days.from_now
         )
         session.revoke!
@@ -67,8 +70,8 @@ RSpec.describe StandardId::Api::AuthenticationGuard, type: :model do
       end
 
       it "clears the session and raises RevokedSessionError" do
-        allow(api_session_manager).to receive(:load_current_session).and_return(revoked_session)
-        expect(api_session_manager).to receive(:clear_session!)
+        allow(api_session_manager).to receive(:current_session).and_return(revoked_session)
+        allow(api_session_manager).to receive(:clear_session!)
 
         expect {
           guard.require_session!(api_session_manager)

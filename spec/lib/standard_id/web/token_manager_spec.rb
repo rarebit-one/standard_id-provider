@@ -1,11 +1,12 @@
 require "rails_helper"
 
 RSpec.describe StandardId::Web::TokenManager do
+  include ActiveSupport::Testing::TimeHelpers
   let(:request) { double("Request", remote_ip: "127.0.0.1", user_agent: "Test Browser", ssl?: false) }
   let(:token_manager) { described_class.new(request) }
   let(:account) { double("Account", id: 1) }
   let(:browser_session) { double("BrowserSession", instance_variable_get: "test_token") }
-  let(:password_credential) { double("PasswordCredential", generate_token_for: "remember_token", expires_at: 1.month.from_now) }
+  let(:password_credential) { double("PasswordCredential", generate_token_for: "remember_token") }
   let(:cookies) { {} }
 
   describe "#create_browser_session" do
@@ -47,64 +48,38 @@ RSpec.describe StandardId::Web::TokenManager do
 
   describe "#create_remember_token" do
     context "with non-SSL request" do
-      it "sets remember token cookie with correct attributes" do
-        token_manager.create_remember_token(password_credential, cookies)
+      it "returns remember token hash with correct attributes" do
+        travel_to(Time.current) do
+          expected_expires = 1.month.from_now
+          allow(password_credential).to receive(:expires_at).and_return(expected_expires)
 
-        expect(cookies[:remember_token]).to eq({
-          value: "remember_token",
-          expires: password_credential.expires_at,
-          httponly: true,
-          secure: false,
-          same_site: :lax
-        })
+          result = token_manager.create_remember_token(password_credential)
+
+          expect(result).to eq({
+            value: "remember_token",
+            expires: expected_expires,
+            httponly: true,
+            secure: false,
+            same_site: :lax
+          })
+        end
       end
     end
 
     context "with SSL request" do
-      let(:ssl_request) { double("Request", remote_ip: "127.0.0.1", user_agent: "Test Browser", ssl?: true) }
-      let(:ssl_token_manager) { described_class.new(ssl_request) }
+      let(:request) { double("Request", remote_ip: "127.0.0.1", user_agent: "Test Browser", ssl?: true) }
 
       it "sets secure flag to true" do
-        ssl_token_manager.create_remember_token(password_credential, cookies)
+        travel_to(Time.current) do
+          expected_expires = 1.month.from_now
+          allow(password_credential).to receive(:expires_at).and_return(expected_expires)
 
-        expect(cookies[:remember_token][:secure]).to be true
+          result = token_manager.create_remember_token(password_credential)
+
+          expect(result[:secure]).to be true
+        end
       end
     end
   end
 
-  describe "#sign_in_account" do
-    let(:session_manager) { double("SessionManager") }
-
-    before do
-      allow(StandardId::BrowserSession).to receive(:create!).and_return(browser_session)
-      allow(session_manager).to receive(:set_session_token)
-      allow(Current).to receive(:session=)
-    end
-
-    it "creates a browser session" do
-      expect(StandardId::BrowserSession).to receive(:create!).with(
-        account: account,
-        ip_address: "127.0.0.1",
-        user_agent: "Test Browser",
-        expires_at: be_within(1.minute).of(24.hours.from_now)
-      )
-
-      token_manager.sign_in_account(account, session_manager)
-    end
-
-    it "sets session token via session manager" do
-      expect(session_manager).to receive(:set_session_token).with("test_token")
-      token_manager.sign_in_account(account, session_manager)
-    end
-
-    it "sets Current.session" do
-      expect(Current).to receive(:session=).with(browser_session)
-      token_manager.sign_in_account(account, session_manager)
-    end
-
-    it "returns the browser session" do
-      result = token_manager.sign_in_account(account, session_manager)
-      expect(result).to eq(browser_session)
-    end
-  end
 end

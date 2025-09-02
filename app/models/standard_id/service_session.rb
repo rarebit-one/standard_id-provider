@@ -4,6 +4,7 @@ module StandardId
 
     validates :service_name, presence: true
     validates :service_version, presence: true
+    validates :owner, presence: true
 
     before_validation :set_default_expiry, on: :create
 
