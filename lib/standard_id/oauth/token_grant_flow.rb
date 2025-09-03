@@ -3,9 +3,10 @@ module StandardId
     class TokenGrantFlow < BaseRequestFlow
       attr_reader :params, :request
 
-      def initialize(params, request)
+      def initialize(params, request, current_account: nil)
         @params = params
         @request = request
+        @current_account = current_account
       end
 
       class << self

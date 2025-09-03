@@ -27,6 +27,10 @@ module StandardId
       (scopes || "").split(" ").map(&:strip).reject(&:blank?)
     end
 
+    def default_redirect_uri
+      redirect_uris&.split(" ")&.first
+    end
+
     private
 
     def ensure_client_id

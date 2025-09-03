@@ -16,6 +16,13 @@ module StandardId
         response.headers["Cache-Control"] = "no-store"
         response.headers["Pragma"] = "no-cache"
       end
+
+      def expect_and_permit!(expected_keys, permitted_keys)
+        params.expect(expected_keys)
+        params.permit(*permitted_keys)
+      rescue ActionController::ParameterMissing => e
+        raise StandardId::InvalidRequestError, "The #{e.param} parameter is required"
+      end
     end
   end
 end

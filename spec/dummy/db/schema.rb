@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_134520) do
     t.string "client_id", null: false
     t.string "client_secret_digest", null: false
     t.string "scopes"
+    t.string "redirect_uris"
     t.boolean "active", default: true, null: false
     t.datetime "revoked_at"
     t.datetime "created_at", null: false

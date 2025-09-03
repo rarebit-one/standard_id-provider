@@ -34,10 +34,7 @@ module StandardId
         end
 
         def flow_strategy_params
-          @flow_strategy_params ||= [
-            params.permit(flow_strategy_class.permitted_params),
-            params.expect(flow_strategy_class.expected_params)
-          ].inject(&:merge)
+          @flow_strategy_params ||= expect_and_permit!(flow_strategy_class.expected_params, flow_strategy_class.permitted_params)
         end
       end
     end

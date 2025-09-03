@@ -16,7 +16,9 @@ require "standard_id/oauth/token_grant_flow"
 require "standard_id/oauth/client_credentials_flow"
 require "standard_id/oauth/authorization_code_flow"
 require "standard_id/oauth/password_flow"
-
+require "standard_id/oauth/authorization_flow"
+require "standard_id/oauth/authorization_code_authorization_flow"
+require "standard_id/oauth/implicit_authorization_flow"
 module StandardId
   class << self
     def configure

@@ -47,4 +47,8 @@ module StandardId
   class UnauthorizedClientError < OAuthError
     def oauth_error_code = :unauthorized_client
   end
+
+  class UnsupportedResponseTypeError < OAuthError
+    def oauth_error_code = :unsupported_response_type
+  end
 end

@@ -3,11 +3,12 @@ module StandardId
     # Shared base for all OAuth flows to handle params DSL and request context
     # Used by both token grant flows and authorization endpoint flows
     class BaseRequestFlow
-      attr_reader :params, :request
+      attr_reader :params, :request, :current_account
 
-      def initialize(params, request)
+      def initialize(params, request, current_account: nil)
         @params = params
         @request = request
+        @current_account = current_account
       end
 
       class << self

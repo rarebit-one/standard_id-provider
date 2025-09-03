@@ -14,10 +14,20 @@ module StandardId
     # Optional cache store and logger, used by StandardId.cache_store and StandardId.logger
     attr_accessor :cache_store, :logger
 
+    # OAuth issuer identifier for ID tokens
+    attr_accessor :issuer
+
+    # Optional login URL for redirecting unauthenticated browser requests
+    # Example: "/login" or a full URL like "https://app.example.com/login"
+    # If set, Authorization endpoints can redirect to this path with a redirect_uri param
+    attr_accessor :login_url
+
     def initialize
       @account_class_name = nil
       @cache_store = nil
       @logger = nil
+      @issuer = nil
+      @login_url = nil
     end
 
     def account_class

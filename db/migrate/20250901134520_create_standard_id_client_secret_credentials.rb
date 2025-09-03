@@ -7,6 +7,7 @@ class CreateStandardIdClientSecretCredentials < ActiveRecord::Migration[7.1]
       t.string :client_secret_digest, null: false
 
       t.string :scopes
+      t.string :redirect_uris
 
       t.boolean :active, null: false, default: true
       t.datetime :revoked_at
