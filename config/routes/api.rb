@@ -1,5 +1,7 @@
 StandardId::ApiEngine.routes.draw do
-  namespace :oauth do
-    resource :token, only: [:create]
+  scope module: :api do
+    namespace :oauth do
+      resource :token, only: [:create]
+    end
   end
 end

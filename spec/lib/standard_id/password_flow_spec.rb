@@ -1,0 +1,105 @@
+require "rails_helper"
+
+RSpec.describe StandardId::Oauth::PasswordFlow do
+  let(:request) { instance_double("ActionDispatch::Request") }
+  let(:client_id) { "client_123" }
+  let(:client_secret) { "s3cr3t" }
+  let(:username) { "user@example.com" }
+  let(:password) { "password1" }
+  let(:scope) { nil }
+  let(:audience) { "https://api.example.com" }
+  let(:base_params) { { client_id: client_id, username: username, password: password, audience: audience } }
+  let(:params) { base_params.merge(scope: scope) }
+
+  let(:account) { instance_double("Account", id: 77) }
+
+  describe "#authenticate!" do
+    it "authenticates with username/password without client_secret" do
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+
+      flow = described_class.new(params, request)
+      expect { flow.authenticate! }.not_to raise_error
+    end
+
+    it "authenticates with username/password and client_secret (valid client)" do
+      allow_any_instance_of(described_class)
+        .to receive(:validate_client_secret!)
+        .with(client_id, client_secret)
+        .and_return(true)
+
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+
+      flow = described_class.new(params.merge(client_secret: client_secret), request)
+      expect { flow.authenticate! }.not_to raise_error
+    end
+
+    it "raises InvalidGrantError when account auth fails" do
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(nil)
+
+      flow = described_class.new(params, request)
+      expect { flow.authenticate! }.to raise_error(StandardId::InvalidGrantError)
+    end
+
+    it "has a pending spec for scope validation when scope is present" do
+      pending("validate_requested_scope! is not implemented yet; add validation tests when implemented")
+
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+
+      flow = described_class.new(params.merge(scope: "read write"), request)
+      flow.authenticate!
+    end
+  end
+
+  describe "private API" do
+    it "exposes subject_id, client_id, token_scope (default), grant_type, audience, expiry and refresh support" do
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+
+      flow = described_class.new(params, request)
+      flow.authenticate!
+
+      expect(flow.send(:subject_id)).to eq(77)
+      expect(flow.send(:client_id)).to eq(client_id)
+      expect(flow.send(:token_scope)).to eq("read") # default scope
+      expect(flow.send(:grant_type)).to eq("password")
+      expect(flow.send(:audience)).to eq(audience)
+      expect(flow.send(:supports_refresh_token?)).to be(true)
+      expect(flow.send(:token_expiry)).to eq(8.hours)
+
+      token = flow.send(:generate_refresh_token)
+      expect(token).to be_a(String)
+      expect(token.length).to be > 0
+    end
+
+    it "uses provided scope when present" do
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+      
+      # Avoid NotImplementedError from validate_requested_scope!
+      allow_any_instance_of(described_class)
+        .to receive(:validate_requested_scope!)
+        .and_return(true)
+
+      flow = described_class.new(params.merge(scope: "read write"), request)
+      flow.authenticate!
+
+      expect(flow.send(:token_scope)).to eq("read write")
+    end
+  end
+end

@@ -11,6 +11,10 @@ require "standard_id/web/authentication_guard"
 require "standard_id/api/session_manager"
 require "standard_id/api/token_manager"
 require "standard_id/api/authentication_guard"
+require "standard_id/oauth/base_flow"
+require "standard_id/oauth/client_credentials_flow"
+require "standard_id/oauth/authorization_code_flow"
+require "standard_id/oauth/password_flow"
 
 module StandardId
   class << self

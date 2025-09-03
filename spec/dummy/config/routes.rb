@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    mount StandardId::ApiEngine => "/"
+    mount StandardId::ApiEngine => "/", as: :standard_id_api
 
     resource :ping, only: [:show]
   end
@@ -16,4 +16,6 @@ Rails.application.routes.draw do
   namespace :util do
     post "/session", to: "session#set"
   end
+
+  get "/test_api", to: "test_api#show"
 end

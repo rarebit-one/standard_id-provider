@@ -1,0 +1,69 @@
+module StandardId
+  module Oauth
+    class PasswordFlow < BaseFlow
+      expect_params :username, :password, :client_id
+      permit_params :client_secret, :audience, :scope, :realm
+
+      def authenticate!
+        validate_client_secret!(params[:client_id], params[:client_secret]) if params[:client_secret].present?
+
+        @account = authenticate_account(params[:username], params[:password])
+        raise StandardId::InvalidGrantError, "Invalid username or password" if @account.blank?
+
+        validate_requested_scope!
+      end
+
+      private
+
+      def subject_id
+        @account.id
+      end
+
+      def client_id
+        params[:client_id]
+      end
+
+      def token_scope
+        params[:scope] || default_scope
+      end
+
+      def grant_type
+        "password"
+      end
+
+      def audience
+        params[:audience]
+      end
+
+      def supports_refresh_token?
+        true
+      end
+
+      def generate_refresh_token
+        SecureRandom.urlsafe_base64(32)
+      end
+
+      def token_expiry
+        8.hours # Longer expiry for user sessions
+      end
+
+      def authenticate_account(username, password)
+        StandardId::PasswordCredential
+          .includes(credential: :account)
+          .find_by(login: username)
+          &.authenticate(password)
+          &.account
+      end
+
+      def validate_requested_scope!
+        return unless params[:scope].present?
+
+        raise NotImplementedError # TODO: implement scope validation
+      end
+
+      def default_scope
+        "read"
+      end
+    end
+  end
+end
