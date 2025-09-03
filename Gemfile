@@ -12,6 +12,7 @@ gem "sqlite3"
 gem "propshaft"
 
 group :development, :test do
+  gem "ostruct"
   gem "rspec-rails", "~> 8.0.0"
   gem "shoulda-matchers", "~> 6.0"
 end
