@@ -1,6 +1,6 @@
 module StandardId
   module Oauth
-    class AuthorizationCodeFlow < BaseFlow
+    class AuthorizationCodeFlow < TokenGrantFlow
       expect_params :client_id, :client_secret, :code
       permit_params :redirect_uri
 

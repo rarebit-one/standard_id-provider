@@ -1,6 +1,6 @@
 module StandardId
   module Oauth
-    class ClientCredentialsFlow < BaseFlow
+    class ClientCredentialsFlow < TokenGrantFlow
       expect_params :client_id, :client_secret, :audience
       permit_params :organization
 

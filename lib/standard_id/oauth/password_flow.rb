@@ -1,6 +1,6 @@
 module StandardId
   module Oauth
-    class PasswordFlow < BaseFlow
+    class PasswordFlow < TokenGrantFlow
       expect_params :username, :password, :client_id
       permit_params :client_secret, :audience, :scope, :realm
 

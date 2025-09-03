@@ -1,6 +1,6 @@
 module StandardId
   module Oauth
-    class BaseFlow
+    class TokenGrantFlow < BaseRequestFlow
       attr_reader :params, :request
 
       def initialize(params, request)
@@ -9,25 +9,8 @@ module StandardId
       end
 
       class << self
-        def expect_params(*keys)
-          @expected_params ||= []
-          @expected_params |= keys.flatten.map! { |k| k.to_sym }
-        end
-
-        def permit_params(*keys)
-          @permitted_params ||= []
-          @permitted_params |= keys.flatten.map! { |k| k.to_sym }
-        end
-
-        def expected_params
-          Array(@expected_params).dup
-        end
-
-        def permitted_params
-          exp = expected_params
-          perm = Array(@permitted_params)
-          configured = (exp + perm + [:grant_type]).uniq
-          return configured
+        def extra_permitted_keys
+          [:grant_type]
         end
       end
 

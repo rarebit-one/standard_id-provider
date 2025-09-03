@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe StandardId::Oauth::BaseFlow do
+RSpec.describe StandardId::Oauth::TokenGrantFlow do
   describe "class configuration API" do
     let(:flow_class) { Class.new(described_class) }
 
