@@ -6,10 +6,6 @@ module StandardId
 
         private
 
-        def token_manager
-          @token_manager ||= StandardId::Api::TokenManager.new(request)
-        end
-
         def handle_oauth_error(exception)
           error_code = exception.respond_to?(:oauth_error_code) ? exception.oauth_error_code : :invalid_request
           status = exception.respond_to?(:http_status) ? exception.http_status : :bad_request

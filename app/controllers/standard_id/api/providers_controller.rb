@@ -4,10 +4,12 @@ module StandardId
       skip_before_action :validate_content_type!
 
       def google
+        expect_and_permit!([:state, :code], [:state, :code])
         handle_social_callback("google-oauth2")
       end
 
       def apple
+        expect_and_permit!([:state, :code], [:state, :code])
         handle_social_callback("apple")
       end
 

@@ -1,8 +1,8 @@
 module StandardId
   class NotAuthenticatedError < StandardError; end
-  class InvalidsessionError < StandardError; end
-  class ExpiredSessionError < InvalidsessionError; end
-  class RevokedSessionError < InvalidsessionError; end
+  class InvalidSessionError < StandardError; end
+  class ExpiredSessionError < InvalidSessionError; end
+  class RevokedSessionError < InvalidSessionError; end
 
   class OAuthError < StandardError
     def oauth_error_code
