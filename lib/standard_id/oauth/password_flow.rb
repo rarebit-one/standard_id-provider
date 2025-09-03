@@ -58,7 +58,12 @@ module StandardId
       def validate_requested_scope!
         return unless params[:scope].present?
 
-        raise NotImplementedError # TODO: implement scope validation
+        scope_tokens = params[:scope].split(/\s+/)
+        invalid_tokens = scope_tokens.reject { |token| token.match?(/\A[a-zA-Z0-9_:-]+\z/) }
+
+        if invalid_tokens.any?
+          raise StandardId::InvalidScopeError, "Invalid scope tokens: #{invalid_tokens.join(', ')}"
+        end
       end
 
       def default_scope

@@ -31,6 +31,7 @@ module StandardId
         unless client_secret_credential&.authenticate_client_secret(client_secret)
           raise StandardId::InvalidClientError, "Client authentication failed"
         end
+        client_secret_credential
       end
 
       def generate_token_response

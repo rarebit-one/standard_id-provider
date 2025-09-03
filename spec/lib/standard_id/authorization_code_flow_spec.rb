@@ -19,10 +19,11 @@ RSpec.describe StandardId::Oauth::AuthorizationCodeFlow do
       "AuthorizationCode",
       valid_for_client?: true,
       redirect_uri: redirect_uri,
-      user_id: 99,
+      account_id: 99,
       scope: "read write"
     ).tap do |ac|
       allow(ac).to receive(:mark_as_used!)
+      allow(ac).to receive(:pkce_valid?).and_return(true)
     end
   end
 
@@ -126,9 +127,29 @@ RSpec.describe StandardId::Oauth::AuthorizationCodeFlow do
       expect(token.length).to be > 0
     end
 
-    it "has a pending spec for find_authorization_code implementation details" do
-      pending("find_authorization_code is not implemented yet; add storage-backed tests when implemented")
-      expect(true).to be(false) # placeholder
+    it "finds authorization code using StandardId::AuthorizationCode.lookup" do
+      code = "test_code_123"
+      auth_code = instance_double("StandardId::AuthorizationCode")
+      test_flow = described_class.new(params, request)
+
+      # Override the stub from before block to allow any arguments
+      allow(test_flow).to receive(:find_authorization_code).and_call_original
+      expect(StandardId::AuthorizationCode).to receive(:lookup).with(code).and_return(auth_code)
+
+      result = test_flow.send(:find_authorization_code, code)
+      expect(result).to eq(auth_code)
+    end
+
+    it "returns nil when authorization code is not found" do
+      code = "nonexistent_code"
+      test_flow = described_class.new(params, request)
+
+      # Override the stub from before block to allow any arguments
+      allow(test_flow).to receive(:find_authorization_code).and_call_original
+      expect(StandardId::AuthorizationCode).to receive(:lookup).with(code).and_return(nil)
+
+      result = test_flow.send(:find_authorization_code, code)
+      expect(result).to be_nil
     end
   end
 end

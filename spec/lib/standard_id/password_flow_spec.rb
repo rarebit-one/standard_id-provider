@@ -49,16 +49,24 @@ RSpec.describe StandardId::Oauth::PasswordFlow do
       expect { flow.authenticate! }.to raise_error(StandardId::InvalidGrantError)
     end
 
-    it "has a pending spec for scope validation when scope is present" do
-      pending("validate_requested_scope! is not implemented yet; add validation tests when implemented")
-
+    it "validates scope tokens when scope is present" do
       allow_any_instance_of(described_class)
         .to receive(:authenticate_account)
         .with(username, password)
         .and_return(account)
 
       flow = described_class.new(params.merge(scope: "read write"), request)
-      flow.authenticate!
+      expect { flow.authenticate! }.not_to raise_error
+    end
+
+    it "raises InvalidScopeError for invalid scope tokens" do
+      allow_any_instance_of(described_class)
+        .to receive(:authenticate_account)
+        .with(username, password)
+        .and_return(account)
+
+      flow = described_class.new(params.merge(scope: "read invalid@scope"), request)
+      expect { flow.authenticate! }.to raise_error(StandardId::InvalidScopeError)
     end
   end
 

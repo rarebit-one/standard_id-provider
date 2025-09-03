@@ -2,7 +2,7 @@ module StandardId
   module Oauth
     class AuthorizationCodeFlow < TokenGrantFlow
       expect_params :client_id, :client_secret, :code
-      permit_params :redirect_uri
+      permit_params :redirect_uri, :code_verifier
 
       def authenticate!
         @credential = validate_client_secret!(params[:client_id], params[:client_secret])
@@ -16,13 +16,17 @@ module StandardId
           raise StandardId::InvalidGrantError, "Redirect URI mismatch"
         end
 
+        unless @authorization_code.pkce_valid?(params[:code_verifier])
+          raise StandardId::InvalidGrantError, "Invalid PKCE code_verifier"
+        end
+
         @authorization_code.mark_as_used!
       end
 
       private
 
       def subject_id
-        @authorization_code.user_id
+        @authorization_code.account_id
       end
 
       def client_id
@@ -46,7 +50,7 @@ module StandardId
       end
 
       def find_authorization_code(code)
-        raise NotImplementedError # TODO: to be implemented based on your authorization code storage
+        StandardId::AuthorizationCode.lookup(code)
       end
     end
   end

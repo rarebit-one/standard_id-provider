@@ -19,6 +19,10 @@ require "standard_id/oauth/password_flow"
 require "standard_id/oauth/authorization_flow"
 require "standard_id/oauth/authorization_code_authorization_flow"
 require "standard_id/oauth/implicit_authorization_flow"
+require "standard_id/oauth/subflows/base"
+require "standard_id/oauth/subflows/traditional_code_grant"
+require "standard_id/oauth/subflows/social_login_grant"
+
 module StandardId
   class << self
     def configure
