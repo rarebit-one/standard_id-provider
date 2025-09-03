@@ -10,13 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_134520) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_03_063000) do
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "standard_id_authorization_codes", force: :cascade do |t|
+    t.bigint "account_id"
+    t.string "code_hash", null: false
+    t.string "client_id", null: false
+    t.text "redirect_uri", null: false
+    t.string "scope"
+    t.string "audience"
+    t.string "nonce"
+    t.string "code_challenge"
+    t.string "code_challenge_method"
+    t.datetime "issued_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "consumed_at"
+    t.json "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "expires_at"], name: "idx_on_account_id_expires_at_22bee5ab05"
+    t.index ["account_id"], name: "index_standard_id_authorization_codes_on_account_id"
+    t.index ["client_id", "expires_at"], name: "idx_on_client_id_expires_at_413231188c"
+    t.index ["code_hash"], name: "index_standard_id_authorization_codes_on_code_hash", unique: true
+    t.index ["consumed_at"], name: "index_standard_id_authorization_codes_on_consumed_at"
+    t.index ["expires_at"], name: "index_standard_id_authorization_codes_on_expires_at"
   end
 
   create_table "standard_id_client_secret_credentials", force: :cascade do |t|
@@ -89,6 +113,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_134520) do
     t.index ["type"], name: "index_standard_id_sessions_on_type"
   end
 
+  add_foreign_key "standard_id_authorization_codes", "accounts"
   add_foreign_key "standard_id_credentials", "standard_id_identifiers", column: "identifier_id"
   add_foreign_key "standard_id_identifiers", "accounts"
   add_foreign_key "standard_id_sessions", "accounts"
