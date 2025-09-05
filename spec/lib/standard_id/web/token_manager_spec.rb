@@ -68,5 +68,4 @@ RSpec.describe StandardId::Web::TokenManager do
       end
     end
   end
-
 end

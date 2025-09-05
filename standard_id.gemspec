@@ -3,8 +3,8 @@ require_relative "lib/standard_id/version"
 Gem::Specification.new do |spec|
   spec.name        = "standard_id"
   spec.version     = StandardId::VERSION
-  spec.authors     = [ "Jaryl Sim" ]
-  spec.email       = [ "code@jaryl.dev" ]
+  spec.authors     = ["Jaryl Sim"]
+  spec.email       = ["code@jaryl.dev"]
   spec.homepage    = "https://github.com/rarebit-one/standard_id"
   spec.summary     = "A comprehensive authentication engine for Rails, built on the security primitives introduced in Rails 7/8."
   spec.description = "StandardId is an authentication engine that provides a complete, secure-by-default solution for identity management, reducing boilerplate and eliminating common security pitfalls."

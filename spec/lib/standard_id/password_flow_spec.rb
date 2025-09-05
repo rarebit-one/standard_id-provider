@@ -98,7 +98,7 @@ RSpec.describe StandardId::Oauth::PasswordFlow do
         .to receive(:authenticate_account)
         .with(username, password)
         .and_return(account)
-      
+
       # Avoid NotImplementedError from validate_requested_scope!
       allow_any_instance_of(described_class)
         .to receive(:validate_requested_scope!)

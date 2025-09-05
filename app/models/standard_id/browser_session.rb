@@ -8,15 +8,15 @@ module StandardId
       # Simple user agent parsing - in production you might want to use a gem like browser
       case user_agent
       when /Edge/i
-        { browser: 'Edge', type: 'browser' }
+        { browser: "Edge", type: "browser" }
       when /Chrome/i
-        { browser: 'Chrome', type: 'browser' }
+        { browser: "Chrome", type: "browser" }
       when /Firefox/i
-        { browser: 'Firefox', type: 'browser' }
+        { browser: "Firefox", type: "browser" }
       when /Safari/i
-        { browser: 'Safari', type: 'browser' }
+        { browser: "Safari", type: "browser" }
       else
-        { browser: 'Unknown', type: 'browser' }
+        { browser: "Unknown", type: "browser" }
       end
     end
 

@@ -9,17 +9,17 @@ module StandardId
       # Simple device agent parsing
       case device_agent
       when /iOS/i
-        { platform: 'iOS', type: 'mobile' }
+        { platform: "iOS", type: "mobile" }
       when /Android/i
-        { platform: 'Android', type: 'mobile' }
+        { platform: "Android", type: "mobile" }
       when /Windows/i
-        { platform: 'Windows', type: 'desktop' }
+        { platform: "Windows", type: "desktop" }
       when /Mac/i
-        { platform: 'macOS', type: 'desktop' }
+        { platform: "macOS", type: "desktop" }
       when /Linux/i
-        { platform: 'Linux', type: 'desktop' }
+        { platform: "Linux", type: "desktop" }
       else
-        { platform: 'Unknown', type: 'unknown' }
+        { platform: "Unknown", type: "unknown" }
       end
     end
 

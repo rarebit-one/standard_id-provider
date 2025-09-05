@@ -94,5 +94,4 @@ RSpec.describe StandardId::Web::AuthenticationGuard do
       end
     end
   end
-
 end

@@ -109,13 +109,13 @@ module StandardId
 
           def handle_callback_error
             error_message = case params[:error]
-                          when "access_denied"
+            when "access_denied"
                             "Authentication was cancelled"
-                          when "invalid_request"
+            when "invalid_request"
                             "Invalid authentication request"
-                          else
+            else
                             "Authentication failed"
-                          end
+            end
 
             redirect_to login_path, alert: error_message
           end

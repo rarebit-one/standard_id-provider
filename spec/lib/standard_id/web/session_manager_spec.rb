@@ -61,7 +61,7 @@ RSpec.describe StandardId::Web::SessionManager do
           .with(:remember_me, "remember_token").and_return(password_credential)
         allow(token_manager).to receive(:create_browser_session).with(account, remember_me: true).and_return(browser_session)
         allow(browser_session).to receive(:token).and_return("token_value")
-        allow(token_manager).to receive(:create_remember_token).with(password_credential).and_return({value: "new_remember_token"})
+        allow(token_manager).to receive(:create_remember_token).with(password_credential).and_return({ value: "new_remember_token" })
         # Mock Current.session= to actually store the value for subsequent calls
         allow(Current).to receive(:session=) do |value|
           allow(Current).to receive(:session).and_return(value)
@@ -81,7 +81,7 @@ RSpec.describe StandardId::Web::SessionManager do
 
       it "creates new remember token" do
         session_manager.current_session
-        expect(cookies[:remember_token]).to eq({value: "new_remember_token"})
+        expect(cookies[:remember_token]).to eq({ value: "new_remember_token" })
       end
     end
 
@@ -146,5 +146,4 @@ RSpec.describe StandardId::Web::SessionManager do
       session_manager.clear_session!
     end
   end
-
 end
