@@ -4,12 +4,6 @@ Rails.application.routes.draw do
   # Playground root
   root to: "public#info"
 
-  get "info", to: "public#info"
-
-  namespace :backend do
-    root to: "dashboard#show"
-  end
-
   namespace :api do
     mount StandardId::ApiEngine => "/", as: :standard_id_api
 
@@ -35,13 +29,13 @@ Rails.application.routes.draw do
     get "/mobile", to: "mobile_auth#index"
   end
 
-  # Admin/management (placeholders for future UI)
+  # Admin/management
   namespace :admin do
+    root to: "dashboard#index"
+
     resources :accounts, only: [:index, :show]
-    resources :applications
+    resources :clients
     resources :sessions, only: [:index, :destroy]
     resources :tokens, only: [:index, :destroy]
-    resources :audit_logs, only: [:index, :show]
-    root to: "dashboard#index"
   end
 end

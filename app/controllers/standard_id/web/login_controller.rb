@@ -13,7 +13,7 @@ module StandardId
 
       def create
         if sign_in_account(login_params)
-          redirect_to params[:redirect_uri] || after_authentication_url, notice: "Successfully signed in"
+          redirect_to params[:redirect_uri] || after_authentication_url, status: :see_other, notice: "Successfully signed in"
         else
           flash.now[:alert] = "Invalid email or password"
           render :show, status: :unprocessable_content

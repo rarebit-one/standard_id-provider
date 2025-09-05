@@ -1,7 +1,11 @@
 module Admin
-  class DashboardController < ApplicationController
+  class DashboardController < BaseController
     def index
-      render plain: "Admin Dashboard - Not implemented yet"
+      @accounts_count = Account.count
+      @sessions_count = StandardId::Session.count
+      @active_sessions_count = StandardId::Session.active.count
+      @identifiers_count = StandardId::Identifier.count
+      @credentials_count = StandardId::Credential.count
     end
   end
 end

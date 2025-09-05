@@ -1,0 +1,79 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900 dark:text-white">Accounts</h1>
+      <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">A list of all user accounts and their identifiers.</p>
+    </div>
+  </div>
+
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @accounts.any? %>
+          <table class="relative min-w-full divide-y divide-gray-300 dark:divide-white/15">
+            <thead>
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 dark:text-white">Account</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Identifiers</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Sessions</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Created</th>
+                <th scope="col" class="py-3.5 pl-3 pr-4 sm:pr-0">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white dark:divide-white/10 dark:bg-gray-900">
+              <% @accounts.each do |account| %>
+                <tr>
+                  <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                    <div class="flex items-center">
+                      <div class="size-11 shrink-0">
+                        <div class="size-11 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-semibold dark:bg-indigo-900/40 dark:text-indigo-300">
+                          <%= account.name&.first&.upcase || account.email&.first&.upcase || 'U' %>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="font-medium text-gray-900 dark:text-white"><%= account.name || 'Unnamed' %></div>
+                        <div class="mt-1 text-gray-500 dark:text-gray-400">ID: <%= account.id %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                    <% if account.identifiers.any? %>
+                      <% account.identifiers.limit(3).each do |identifier| %>
+                        <div class="text-gray-900 dark:text-white">
+                          <%= identifier.type.demodulize %>: <%= identifier.value %>
+                          <% if identifier.verified? %>
+                            <span class="ml-1 inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-500/50">✓</span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                      <% if account.identifiers.count > 3 %>
+                        <div class="mt-1 text-gray-500 dark:text-gray-400">+<%= account.identifiers.count - 3 %> more</div>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400 dark:text-gray-500">No identifiers</span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 dark:text-white">
+                    <% active_count = account.sessions.active.count %>
+                    <% total_count = account.sessions.count %>
+                    <%= active_count %> active / <%= total_count %> total
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 dark:text-white">
+                    <%= l(account.created_at, format: :short) rescue account.created_at.strftime("%b %d, %Y") %>
+                  </td>
+                  <td class="whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                    <%= link_to "View", admin_account_path(account), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="rounded-md p-6 text-sm text-gray-600 ring-1 ring-inset ring-gray-200 dark:text-gray-300 dark:ring-white/10">No accounts found.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900 dark:text-white">Admin Dashboard</h1>
+      <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">Overview of your StandardId system.</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800">
+      <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Total Accounts</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white"><%= @accounts_count %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800">
+      <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Active Sessions</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white"><%= @active_sessions_count %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800">
+      <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Total Identifiers</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white"><%= @identifiers_count %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800">
+      <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Total Credentials</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white"><%= @credentials_count %></dd>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Account Management</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage user accounts and their identifiers.</p>
+        <div class="mt-4">
+          <%= link_to "View Accounts", admin_accounts_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Session Management</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Monitor and manage active user sessions.</p>
+        <div class="mt-4">
+          <%= link_to "View Sessions", admin_sessions_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">OAuth Clients</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage OAuth client applications.</p>
+        <div class="mt-4">
+          <%= link_to "View Clients", admin_clients_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Access Tokens</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Monitor issued access tokens.</p>
+        <div class="mt-4">
+          <%= link_to "View Tokens", admin_tokens_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

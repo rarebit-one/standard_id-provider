@@ -1,11 +1,20 @@
 module Admin
-  class AccountsController < ApplicationController
+  class AccountsController < BaseController
+    before_action :prepare_account, only: [:show]
+
     def index
-      render plain: "Admin Accounts - Not implemented yet"
+      @accounts = Account.includes(:identifiers, :sessions).limit(25)
     end
 
     def show
-      render plain: "Admin Account Details - Not implemented yet"
+      @identifiers = @account.identifiers.includes(:credentials)
+      @sessions = @account.sessions.order(created_at: :desc).limit(10)
+    end
+
+    private
+
+    def prepare_account
+      @account = Account.find(params[:id])
     end
   end
 end

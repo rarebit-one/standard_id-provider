@@ -30,7 +30,7 @@ RSpec.describe StandardId::Web::LoginController, type: :controller do
 
         get :show
 
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:see_other)
         expect(response).to redirect_to("/")
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe StandardId::Web::LoginController, type: :controller do
 
         post :create, params: { login: { email: email, password: password }, redirect_uri: "/after" }
 
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:see_other)
         expect(response).to redirect_to("/after")
       end
 
@@ -76,7 +76,7 @@ RSpec.describe StandardId::Web::LoginController, type: :controller do
 
         post :create, params: { login: { email: email, password: password, remember_me: "1" }, redirect_uri: "/after" }
 
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:see_other)
         expect(cookies["remember_token"]).to be_present
       end
 
@@ -85,7 +85,7 @@ RSpec.describe StandardId::Web::LoginController, type: :controller do
 
         post :create, params: { login: { email: email, password: password, remember_me: "0" }, redirect_uri: "/after" }
 
-        expect(response).to have_http_status(:found)
+        expect(response).to have_http_status(:see_other)
         expect(cookies["remember_token"]).to be_blank
       end
     end
