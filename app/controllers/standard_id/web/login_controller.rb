@@ -1,6 +1,8 @@
 module StandardId
   module Web
     class LoginController < BaseController
+      skip_before_action :require_browser_session!, only: [:show, :create]
+
       before_action :redirect_if_authenticated, only: [:show]
       before_action :redirect_if_social_login, only: [:create]
 
@@ -14,7 +16,7 @@ module StandardId
           redirect_to params[:redirect_uri] || after_authentication_url, notice: "Successfully signed in"
         else
           flash.now[:alert] = "Invalid email or password"
-          render :show, status: :unprocessable_entity
+          render :show, status: :unprocessable_content
         end
       end
 

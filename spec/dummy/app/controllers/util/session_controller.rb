@@ -12,7 +12,7 @@ module Util
       value = params[:value].presence || params[:session_token]
 
       if key.nil?
-        render json: { ok: false, error: "missing key or session_token param" }, status: :unprocessable_entity
+        render json: { ok: false, error: "missing key or session_token param" }, status: :unprocessable_content
         return
       end
 

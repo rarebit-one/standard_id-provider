@@ -67,7 +67,7 @@ RSpec.describe StandardId::Web::LoginController, type: :controller do
 
         post :create, params: { login: { email: email, password: "wrong" } }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(flash[:alert]).to eq("Invalid email or password")
       end
 

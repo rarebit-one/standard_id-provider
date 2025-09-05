@@ -17,7 +17,7 @@ module StandardId
           redirect_to account_path, notice: "Account updated successfully"
         else
           flash.now[:alert] = @account.errors.full_messages.join(", ")
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
       end
 
