@@ -8,6 +8,10 @@ module StandardId
       password_digest
     end
 
+    generates_token_for :password_reset, expires_in: 20.minutes do
+      password_digest
+    end
+
     validates :login, presence: true, uniqueness: true
     validates :password, length: { minimum: 8 }, confirmation: true, if: :validate_password?
 

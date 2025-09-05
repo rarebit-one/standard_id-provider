@@ -13,14 +13,10 @@ StandardId::WebEngine.routes.draw do
       end
     end
 
-    # Password management
-    resource :password, only: [], controller: :password do
-      member do
-        get :forgot
-        post :reset_request
-        get :reset
-        post :reset_confirm
-      end
+    # Password reset
+    namespace :reset_password do
+      resource :start, only: [:show, :create], controller: :start
+      resource :confirm, only: [:show, :update], controller: :confirm
     end
 
     # Account management
