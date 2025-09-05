@@ -1,8 +1,6 @@
 module StandardId
   class PasswordCredential < ApplicationRecord
-    has_one :credential, as: :credentialable, touch: true
-
-    delegate :account, to: :credential
+    include StandardId::Credentiable
 
     has_secure_password
 

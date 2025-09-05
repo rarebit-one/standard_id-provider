@@ -1,0 +1,81 @@
+module StandardId
+  module Web
+    class SignupController < BaseController
+      skip_before_action :require_browser_session!, only: [:show, :create]
+
+      before_action :redirect_if_authenticated, only: [:show]
+      before_action :redirect_if_social_login, only: [:create]
+
+      def show
+        @redirect_uri = params[:redirect_uri] || after_authentication_url
+        @connection = params[:connection] # For social login detection
+      end
+
+      def create
+        handle_password_signup
+      end
+
+      private
+
+      def redirect_if_authenticated
+        redirect_to after_authentication_url if authenticated?
+      end
+
+      def redirect_if_social_login
+        redirect_to social_signup_url, allow_other_host: true if params[:connection].present?
+      end
+
+      def handle_password_signup
+        form = StandardId::Web::SignupForm.new(signup_params)
+
+        if form.submit
+          session_manager.sign_in_account(form.account)
+          redirect_to params[:redirect_uri] || after_authentication_url,
+                      notice: "Account created successfully"
+        else
+          flash.now[:alert] = form.errors.full_messages.join(", ")
+          render :show, status: :unprocessable_content
+        end
+      end
+
+      def social_signup_url
+        # Same as login - social providers handle signup/login automatically
+        uri = URI.parse("/api/authorize")
+        query = {
+          response_type: "code",
+          client_id: StandardId.config.default_client_id,
+          redirect_uri: callback_url,
+          connection: params[:connection],
+          state: encode_state
+        }.to_query
+        uri.query = query
+        uri.to_s
+      end
+
+      def callback_url
+        case params[:connection]
+        when "google-oauth2"
+          auth_callback_google_url
+        when "apple"
+          auth_callback_apple_url
+        end
+      end
+
+      def encode_state
+        Base64.urlsafe_encode64({
+          redirect_uri: params[:redirect_uri] || after_authentication_url,
+          timestamp: Time.current.to_i
+        }.to_json)
+      end
+
+      def account_params
+        # Add any additional account fields as needed
+        {}
+      end
+
+      def signup_params
+        params.require(:signup).permit(:email, :password, :password_confirmation)
+      end
+    end
+  end
+end

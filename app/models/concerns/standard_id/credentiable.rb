@@ -3,7 +3,10 @@ module StandardId
     extend ActiveSupport::Concern
 
     included do
-      has_one :credential, as: :credentialable, class_name: "StandardId::Credential", dependent: :restrict_with_exception
+      has_one :credential, as: :credentialable, touch: true
+      accepts_nested_attributes_for :credential
+
+      delegate :account, to: :credential
     end
   end
 end
