@@ -18,7 +18,7 @@ module StandardId
         Current.account ||= current_session&.account
       end
 
-      def sign_in_account(account, remember_me: false)
+      def sign_in_account(account)
         token_manager.create_browser_session(account).tap do |browser_session|
           session[:session_token] = browser_session.token
           Current.session = browser_session
@@ -28,6 +28,10 @@ module StandardId
       def revoke_current_session!
         current_session&.revoke!
         clear_session!
+      end
+
+      def set_remember_cookie(password_credential)
+        cookies[:remember_token] = token_manager.create_remember_token(password_credential)
       end
 
       def clear_session!

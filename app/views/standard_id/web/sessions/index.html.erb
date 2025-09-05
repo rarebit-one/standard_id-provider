@@ -1,0 +1,49 @@
+<% content_for :title, "Sessions" %>
+
+<div class="container">
+  <h1>Active Sessions</h1>
+
+  <% if flash[:alert] %>
+    <div class="alert alert-error">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <% if flash[:notice] %>
+    <div class="alert alert-success">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if @sessions.any? %>
+    <ul>
+      <% @sessions.each do |s| %>
+        <li class="mb-3">
+          <div>
+            <strong>ID:</strong> <%= s.id %>
+            <% if s == @current_session %>
+              <span>(current)</span>
+            <% end %>
+          </div>
+          <div>
+            <strong>Created:</strong> <%= s.created_at.strftime("%b %d, %Y %H:%M") %>
+            <strong class="ml-2">Last Used:</strong> <%= s.updated_at.strftime("%b %d, %Y %H:%M") %>
+          </div>
+          <div class="mt-3">
+            <% if s != @current_session %>
+              <%= button_to "Revoke", session_path(s), method: :delete, class: "btn btn-secondary", data: { confirm: "Revoke this session?" } %>
+            <% else %>
+              <em>To revoke the current session, use Sign Out from Account page.</em>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No active sessions.</p>
+  <% end %>
+
+  <div class="mt-3">
+    <%= link_to "Back to Account", account_path, class: "btn btn-secondary" %>
+  </div>
+</div>

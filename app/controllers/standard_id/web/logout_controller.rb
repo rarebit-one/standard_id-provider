@@ -1,6 +1,8 @@
 module StandardId
   module Web
     class LogoutController < BaseController
+      skip_before_action :require_browser_session!, only: [:create]
+
       before_action :redirect_if_not_authenticated
 
       def create

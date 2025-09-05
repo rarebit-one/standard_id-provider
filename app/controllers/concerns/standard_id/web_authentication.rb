@@ -31,8 +31,8 @@ module StandardId
       StandardId::PasswordCredential.find_by(login:).tap do |password_credential|
         return nil unless password_credential&.authenticate(password)
 
-        session_manager.sign_in_account(password_credential.account, remember_me:)
-        cookies[:remember_token] = token_manager.create_remember_token(password_credential) if remember_me
+        session_manager.sign_in_account(password_credential.account)
+        session_manager.set_remember_cookie(password_credential) if remember_me
       end
     end
 
