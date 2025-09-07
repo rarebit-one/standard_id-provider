@@ -1,6 +1,8 @@
 module StandardId
   module Web
     class LoginController < BaseController
+      layout "public"
+
       skip_before_action :require_browser_session!, only: [:show, :create]
 
       before_action :redirect_if_authenticated, only: [:show]

@@ -37,14 +37,17 @@ RSpec.describe StandardId::Oauth::AuthorizationFlow do
     end
 
     it "raises InvalidClientError when client is not found" do
-      allow(StandardId::ClientSecretCredential).to receive_message_chain(:active, :find_by).and_return(nil)
+      allow(StandardId::ClientApplication).to receive_message_chain(:active, :find_by).and_return(nil)
       flow = build_flow({ response_type: "code", client_id: "none" })
       expect { flow.execute }.to raise_error(StandardId::InvalidClientError)
     end
 
     it "validates redirect_uri against client's allowed list" do
-      cred = OpenStruct.new(redirect_uris: "https://a.example/cb https://b.example/ok", default_redirect_uri: "https://a.example/cb")
-      allow(StandardId::ClientSecretCredential).to receive_message_chain(:active, :find_by).and_return(cred)
+      client = OpenStruct.new(redirect_uris_array: ["https://a.example/cb", "https://b.example/ok"], primary_client_secret: OpenStruct.new)
+      def client.valid_redirect_uri?(uri)
+        redirect_uris_array.include?(uri)
+      end
+      allow(StandardId::ClientApplication).to receive_message_chain(:active, :find_by).and_return(client)
 
       # invalid
       flow = build_flow({ response_type: "code", client_id: "cid", redirect_uri: "https://evil.example/x" })
@@ -55,9 +58,12 @@ RSpec.describe StandardId::Oauth::AuthorizationFlow do
       expect(flow2.execute).to include(ok: true, redirect_to: "https://b.example/ok")
     end
 
-    it "uses client's default_redirect_uri when redirect_uri not provided" do
-      cred = OpenStruct.new(redirect_uris: "https://a.example/cb", default_redirect_uri: "https://a.example/cb")
-      allow(StandardId::ClientSecretCredential).to receive_message_chain(:active, :find_by).and_return(cred)
+    it "uses client's default redirect when redirect_uri not provided" do
+      client = OpenStruct.new(redirect_uris_array: ["https://a.example/cb"], primary_client_secret: OpenStruct.new)
+      def client.valid_redirect_uri?(uri)
+        redirect_uris_array.include?(uri)
+      end
+      allow(StandardId::ClientApplication).to receive_message_chain(:active, :find_by).and_return(client)
 
       flow = build_flow({ response_type: "code", client_id: "cid" })
       result = flow.execute
@@ -80,8 +86,11 @@ RSpec.describe StandardId::Oauth::AuthorizationFlow do
     end
 
     it "execute runs validations, authenticates client, then returns subclass response" do
-      cred = OpenStruct.new(redirect_uris: "https://a.example/cb", default_redirect_uri: "https://a.example/cb")
-      allow(StandardId::ClientSecretCredential).to receive_message_chain(:active, :find_by).and_return(cred)
+      client = OpenStruct.new(redirect_uris_array: ["https://a.example/cb"], primary_client_secret: OpenStruct.new)
+      def client.valid_redirect_uri?(uri)
+        redirect_uris_array.include?(uri)
+      end
+      allow(StandardId::ClientApplication).to receive_message_chain(:active, :find_by).and_return(client)
 
       flow = build_flow({ response_type: "token", client_id: "cid", scope: "read", state: "xyz" })
       result = flow.execute

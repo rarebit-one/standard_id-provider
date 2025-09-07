@@ -1,10 +1,13 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900 dark:text-white">Accounts</h1>
-      <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">A list of all user accounts and their identifiers.</p>
-    </div>
-  </div>
+  <%= render partial: "shared/page_header", locals: {
+        breadcrumbs: [
+          { name: "Admin", href: "/admin" },
+          { name: "Accounts" }
+        ],
+        title: "Accounts",
+        tags: [],
+        actions: false
+      } %>
 
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

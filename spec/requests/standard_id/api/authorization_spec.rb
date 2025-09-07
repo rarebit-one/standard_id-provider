@@ -1,22 +1,27 @@
 require "rails_helper"
 
 RSpec.describe "StandardId API Authorization", type: :request do
-  let(:client_credential) do
-    StandardId::ClientSecretCredential.create!(
+  let(:client_account) { Account.create!(name: "Test Client Account", email: "client-#{SecureRandom.hex(4)}@example.com") }
+  let(:client) do
+    StandardId::ClientApplication.create!(
+      owner: client_account,
       name: "Test Client",
       client_id: "test_client_123",
-      client_secret: "test_secret",
       redirect_uris: "https://example.com/callback https://app.example.com/auth",
-      scopes: "read write",
-      active: true
+      scopes: "read write"
+    )
+  end
+  let(:client_credential) do
+    client.create_client_secret!(
+      name: "Test Client Secret",
+      client_secret: "test_secret"
     )
   end
 
   before do
     # Create the associated credential record via identifier
-    account = Account.create!(name: "Test Client Account", email: "client-#{SecureRandom.hex(4)}@example.com")
     identifier = StandardId::EmailIdentifier.create!(
-      account: account,
+      account: client_account,
       value: "client@example.com",
       verified_at: Time.current
     )
@@ -32,7 +37,7 @@ RSpec.describe "StandardId API Authorization", type: :request do
       let(:valid_params) do
         {
           response_type: "code",
-          client_id: client_credential.client_id,
+          client_id: client.client_id,
           audience: "https://api.example.com",
           redirect_uri: "https://example.com/callback",
           scope: "read",
@@ -86,7 +91,7 @@ RSpec.describe "StandardId API Authorization", type: :request do
       let(:valid_params) do
         {
           response_type: "token",
-          client_id: client_credential.client_id,
+          client_id: client.client_id,
           redirect_uri: "https://example.com/callback",
           scope: "read",
           state: "random_state_456"
@@ -135,7 +140,7 @@ RSpec.describe "StandardId API Authorization", type: :request do
       let(:valid_params) do
         {
           response_type: "token id_token",
-          client_id: client_credential.client_id,
+          client_id: client.client_id,
           redirect_uri: "https://example.com/callback",
           nonce: "test_nonce_789"
         }
@@ -172,7 +177,7 @@ RSpec.describe "StandardId API Authorization", type: :request do
 
     context "with unsupported response_type" do
       it "returns error response for unsupported response_type" do
-        http_get "/api/authorize", params: { response_type: "unsupported", client_id: client_credential.client_id }
+        http_get "/api/authorize", params: { response_type: "unsupported", client_id: client.client_id }
 
         expect(response).to have_http_status(:bad_request)
         body = json_body

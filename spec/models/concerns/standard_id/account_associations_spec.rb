@@ -7,5 +7,6 @@ RSpec.describe StandardId::AccountAssociations, type: :model do
     it { expect(account).to have_many(:identifiers) }
     it { expect(account).to have_many(:credentials).through(:identifiers) }
     it { expect(account).to have_many(:sessions) }
+    it { expect(account).to have_many(:client_applications) }
   end
 end

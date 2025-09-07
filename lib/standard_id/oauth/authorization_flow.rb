@@ -34,16 +34,17 @@ module StandardId
       end
 
       def authenticate_client!
-        @client_credential = StandardId::ClientSecretCredential.active.find_by(client_id: params[:client_id])
-        unless @client_credential
+        @client = StandardId::ClientApplication.active.find_by(client_id: params[:client_id])
+        unless @client
           raise StandardId::InvalidClientError, "Invalid client_id"
         end
 
-        if params[:redirect_uri].present?
-          valid_redirect_uris = @client_credential.redirect_uris&.split(" ") || []
-          unless valid_redirect_uris.include?(params[:redirect_uri])
-            raise StandardId::InvalidRequestError, "Invalid redirect_uri"
-          end
+        # TODO: support for secret key rotation
+        # Maintain @client_credential for downstream compatibility (select any active secret)
+        @client_credential = @client.primary_client_secret
+
+        if params[:redirect_uri].present? && !@client.valid_redirect_uri?(params[:redirect_uri])
+          raise StandardId::InvalidRequestError, "Invalid redirect_uri"
         end
       end
 
@@ -71,7 +72,7 @@ module StandardId
       end
 
       def redirect_uri
-        params[:redirect_uri] || @client_credential.default_redirect_uri
+        params[:redirect_uri] || @client&.redirect_uris_array&.first
       end
 
       def state

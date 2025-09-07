@@ -2,10 +2,11 @@ module StandardId
   module Web
     module ResetPassword
       class ConfirmController < BaseController
+        layout "public"
+
         skip_before_action :require_browser_session!, only: [:show, :update]
 
         before_action :prepare_password_credential, only: [:show, :update]
-
         before_action :redirect_if_token_invalid, only: [:show, :update]
 
         def show

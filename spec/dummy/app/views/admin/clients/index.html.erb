@@ -1,84 +1,92 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900 dark:text-white">OAuth Clients</h1>
-      <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">Manage OAuth client applications and their configurations.</p>
-    </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "New Client", new_admin_client_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500" %>
-    </div>
-  </div>
+  <%= render "shared/page_header",
+      breadcrumbs: [
+        { name: "Admin", href: "/admin" },
+        { name: "Client Applications" }
+      ],
+      title: "Client Applications",
+      tags: [] do %>
+    <%= link_to new_admin_client_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400" do %>
+      Add client
+    <%- end %>
+  <%- end %>
 
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-        <% if @clients.any? %>
-          <table class="relative min-w-full divide-y divide-gray-300 dark:divide-white/15">
-            <thead>
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg dark:ring-white/10">
+          <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 dark:text-white">Client</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6">Name</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Client ID</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Redirect URIs</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Type</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
-                <th scope="col" class="py-3.5 pl-3 pr-4 sm:pr-0">
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Secrets</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Actions</span>
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white dark:divide-white/10 dark:bg-gray-900">
+            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
               <% @clients.each do |client| %>
                 <tr>
-                  <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                    <div class="flex items-center">
-                      <div class="size-11 shrink-0">
-                        <div class="size-11 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-semibold dark:bg-purple-900/40 dark:text-purple-300">
-                          <%= client.name&.first&.upcase || 'C' %>
-                        </div>
-                      </div>
-                      <div class="ml-4">
-                        <div class="font-medium text-gray-900 dark:text-white"><%= client.name || 'Unnamed Client' %></div>
-                        <div class="mt-1 text-gray-500 dark:text-gray-400">ID: <%= client.id %></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 dark:text-white">
-                    <code class="rounded bg-gray-100 px-2 py-1 text-xs dark:bg-gray-800"><%= client.client_id || 'Not set' %></code>
-                  </td>
-                  <td class="px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
-                    <% if client.redirect_uris.present? %>
-                      <% uris = client.redirect_uris.split("\n").first(2) %>
-                      <% uris.each do |uri| %>
-                        <div class="text-gray-900 dark:text-white"><%= uri.strip %></div>
-                      <% end %>
-                      <% if client.redirect_uris.split("\n").count > 2 %>
-                        <div class="mt-1 text-gray-500 dark:text-gray-400">+<%= client.redirect_uris.split("\n").count - 2 %> more</div>
-                      <% end %>
-                    <% else %>
-                      <span class="text-gray-400 dark:text-gray-500">No redirect URIs</span>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
+                    <%= link_to client.name, admin_client_path(client), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                    <% if client.description.present? %>
+                      <div class="text-gray-500 dark:text-gray-400"><%= truncate(client.description, length: 60) %></div>
                     <% end %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
-                    <% if client.respond_to?(:active) && client.active %>
-                      <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-500/50">Active</span>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"><%= client.client_id %></code>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= client.confidential? ? 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30' : 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20' %>">
+                      <%= client.client_type.humanize %>
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= client.active? ? 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20' : 'bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20' %>">
+                      <%= client.active? ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <% if client.confidential? %>
+                      <%= pluralize(client.client_secret_credentials.active.count, 'active secret') %>
                     <% else %>
-                      <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-500/20">Inactive</span>
+                      <span class="text-gray-400 dark:text-gray-500">PKCE only</span>
                     <% end %>
                   </td>
-                  <td class="whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                    <div class="flex justify-end space-x-2">
-                      <%= link_to "View", admin_client_path(client), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-                      <%= link_to "Edit", edit_admin_client_path(client), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <%= link_to "View", admin_client_path(client), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                    <%= link_to "Edit", edit_admin_client_path(client), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                  </td>
+                </tr>
+              <% end %>
+
+              <% if @clients.empty? %>
+                <tr>
+                  <td colspan="6" class="px-6 py-14 text-center text-sm text-gray-500 dark:text-gray-400">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h4.125m0-15.75v15.75" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No client applications</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first OAuth client application.</p>
+                    <div class="mt-6">
+                      <%= link_to new_admin_client_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400" do %>
+                        <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                        New client application
+                      <% end %>
                     </div>
                   </td>
                 </tr>
               <% end %>
             </tbody>
           </table>
-        <% else %>
-          <div class="rounded-md p-6 text-sm text-gray-600 ring-1 ring-inset ring-gray-200 dark:text-gray-300 dark:ring-white/10">
-            No OAuth clients found. <%= link_to "Create your first client", new_admin_client_path, class: "text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" %>.
-          </div>
-        <% end %>
+        </div>
       </div>
     </div>
   </div>

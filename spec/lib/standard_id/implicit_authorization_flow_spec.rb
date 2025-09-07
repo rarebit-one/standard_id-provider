@@ -14,10 +14,13 @@ RSpec.describe StandardId::Oauth::ImplicitAuthorizationFlow do
     let(:request) { instance_double("ActionDispatch::Request") }
     let(:account) { double("Account", id: "user_1") }
 
-    def stub_client(redirects: "https://cb.example/app https://cb2.example/alt", default: "https://cb.example/app")
-      cred = OpenStruct.new(redirect_uris: redirects, default_redirect_uri: default)
-      allow(StandardId::ClientSecretCredential).to receive_message_chain(:active, :find_by).and_return(cred)
-      cred
+    def stub_client(redirects: ["https://cb.example/app", "https://cb2.example/alt"])
+      client = OpenStruct.new(redirect_uris_array: redirects, primary_client_secret: OpenStruct.new)
+      def client.valid_redirect_uri?(uri)
+        redirect_uris_array.include?(uri)
+      end
+      allow(StandardId::ClientApplication).to receive_message_chain(:active, :find_by).and_return(client)
+      client
     end
 
     it "builds redirect with access token in fragment for response_type=token" do

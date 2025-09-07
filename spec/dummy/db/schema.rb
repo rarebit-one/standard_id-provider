@@ -43,8 +43,38 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135906) do
     t.index ["expires_at"], name: "index_standard_id_authorization_codes_on_expires_at"
   end
 
+  create_table "standard_id_client_applications", force: :cascade do |t|
+    t.string "owner_type", null: false
+    t.integer "owner_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.string "client_id", null: false
+    t.text "redirect_uris", null: false
+    t.string "scopes", default: "openid profile email"
+    t.string "grant_types", default: "authorization_code refresh_token"
+    t.string "response_types", default: "code"
+    t.boolean "require_pkce", default: true, null: false
+    t.string "code_challenge_methods", default: "S256"
+    t.integer "access_token_lifetime", default: 3600
+    t.integer "refresh_token_lifetime", default: 2592000
+    t.integer "authorization_code_lifetime", default: 600
+    t.string "client_type", default: "confidential", null: false
+    t.boolean "require_consent", default: true, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "deactivated_at"
+    t.json "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_standard_id_client_applications_on_active"
+    t.index ["client_id"], name: "index_standard_id_client_applications_on_client_id", unique: true
+    t.index ["client_type"], name: "index_standard_id_client_applications_on_client_type"
+    t.index ["owner_type", "owner_id"], name: "idx_on_owner_type_owner_id_936e856298"
+    t.index ["owner_type", "owner_id"], name: "index_standard_id_client_applications_on_owner"
+  end
+
   create_table "standard_id_client_secret_credentials", force: :cascade do |t|
     t.string "name", null: false
+    t.integer "client_application_id", null: false
     t.string "client_id", null: false
     t.string "client_secret_digest", null: false
     t.string "scopes"
@@ -53,7 +83,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135906) do
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_standard_id_client_secret_credentials_on_client_id", unique: true
+    t.index ["client_application_id"], name: "idx_on_client_application_id_2d812bdcd6"
+    t.index ["client_id"], name: "index_standard_id_client_secret_credentials_on_client_id"
   end
 
   create_table "standard_id_credentials", force: :cascade do |t|
@@ -129,6 +160,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135906) do
   end
 
   add_foreign_key "standard_id_authorization_codes", "accounts"
+  add_foreign_key "standard_id_client_secret_credentials", "standard_id_client_applications", column: "client_application_id"
   add_foreign_key "standard_id_credentials", "standard_id_identifiers", column: "identifier_id"
   add_foreign_key "standard_id_identifiers", "accounts"
   add_foreign_key "standard_id_sessions", "accounts"

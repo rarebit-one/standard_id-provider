@@ -34,7 +34,11 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
 
     resources :accounts, only: [:index, :show]
-    resources :clients
+    resources :clients do
+      member do
+        patch :rotate_secret
+      end
+    end
     resources :sessions, only: [:index, :destroy]
     resources :tokens, only: [:index, :destroy]
   end

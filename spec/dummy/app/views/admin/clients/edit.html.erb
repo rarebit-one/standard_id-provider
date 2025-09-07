@@ -1,0 +1,171 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <%= render partial: "shared/page_header", locals: {
+        breadcrumbs: [
+          { name: "Admin", href: "/admin" },
+          { name: "Client Applications", href: "/admin/clients" },
+          { name: @client.name },
+          { name: "Edit" }
+        ],
+        title: "Edit Client Application",
+        tags: [],
+        actions: false
+      } %>
+
+  <div class="space-y-10 divide-y divide-gray-900/10 dark:divide-white/10">
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 pt-10 md:grid-cols-3">
+      <div class="px-4 sm:px-0"></div>
+
+      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2 dark:bg-gray-900 dark:ring-white/10">
+        <%= form_with model: @client, url: admin_client_path(@client), method: :patch, local: true, class: "px-4 py-6 sm:p-8", scope: :client_application do |form| %>
+          <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <!-- Basic Information -->
+            <div class="sm:col-span-4">
+              <%= form.label :name, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_field :name, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+              <% if @client.errors[:name].any? %>
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400"><%= @client.errors[:name].first %></p>
+              <% end %>
+            </div>
+
+            <div class="col-span-full">
+              <%= form.label :description, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_area :description, rows: 3, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <!-- Client Type (read-only after creation) -->
+            <div class="sm:col-span-3">
+              <%= form.label :client_type, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <div class="rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-300">
+                  <%= @client.client_type.humanize %>
+                </div>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Client type cannot be changed after creation.</p>
+              </div>
+            </div>
+
+            <!-- PKCE Settings -->
+            <div class="sm:col-span-3">
+              <div class="flex items-center">
+                <%= form.check_box :require_pkce, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:focus:ring-indigo-500" %>
+                <%= form.label :require_pkce, "Require PKCE", class: "ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              </div>
+              <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Proof Key for Code Exchange adds security for public clients.</p>
+            </div>
+
+            <!-- PKCE Challenge Methods (shown when PKCE is required) -->
+            <div class="col-span-full" id="pkce-methods" style="<%= 'display: none;' unless @client.require_pkce? %>">
+              <%= form.label :code_challenge_methods, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_field :code_challenge_methods, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500", placeholder: "S256 plain" %>
+              </div>
+              <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Space-separated list of supported PKCE challenge methods.</p>
+            </div>
+
+            <!-- Redirect URIs -->
+            <div class="col-span-full">
+              <%= form.label :redirect_uris, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_area :redirect_uris, rows: 3, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+              <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400">Enter one redirect URI per line.</p>
+              <% if @client.errors[:redirect_uris].any? %>
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400"><%= @client.errors[:redirect_uris].first %></p>
+              <% end %>
+            </div>
+
+            <!-- Scopes -->
+            <div class="col-span-full">
+              <%= form.label :scopes, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_field :scopes, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+              <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400">Space-separated list of OAuth scopes.</p>
+            </div>
+
+            <!-- Grant Types -->
+            <div class="sm:col-span-3">
+              <%= form.label :grant_types, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_field :grant_types, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <!-- Response Types -->
+            <div class="sm:col-span-3">
+              <%= form.label :response_types, class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.text_field :response_types, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <!-- Token Lifetimes -->
+            <div class="sm:col-span-2">
+              <%= form.label :access_token_lifetime, "Access Token Lifetime (seconds)", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.number_field :access_token_lifetime, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <%= form.label :refresh_token_lifetime, "Refresh Token Lifetime (seconds)", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.number_field :refresh_token_lifetime, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <%= form.label :authorization_code_lifetime, "Auth Code Lifetime (seconds)", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              <div class="mt-2">
+                <%= form.number_field :authorization_code_lifetime, class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-gray-500 dark:focus:ring-indigo-500" %>
+              </div>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="col-span-full">
+              <div class="flex items-center">
+                <%= form.check_box :require_consent, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:focus:ring-indigo-500" %>
+                <%= form.label :require_consent, "Require user consent", class: "ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              </div>
+              <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Always show consent screen to users.</p>
+            </div>
+
+            <!-- Client Status -->
+            <div class="col-span-full">
+              <div class="flex items-center">
+                <%= form.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:focus:ring-indigo-500" %>
+                <%= form.label :active, "Active", class: "ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
+              </div>
+              <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Inactive clients cannot authenticate or receive tokens.</p>
+            </div>
+          </div>
+
+          <div class="mt-8 flex">
+            <%= form.submit "Update Client", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400" %>
+            <%= link_to "Cancel", admin_client_path(@client), class: "ml-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:ring-white/20 dark:hover:bg-white/20" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Show/hide PKCE challenge methods based on require_pkce checkbox
+    document.addEventListener('DOMContentLoaded', function() {
+      const requirePkceCheckbox = document.getElementById('client_require_pkce');
+      const pkceMethods = document.getElementById('pkce-methods');
+
+      if (requirePkceCheckbox && pkceMethods) {
+        function togglePkceMethods() {
+          pkceMethods.style.display = requirePkceCheckbox.checked ? 'block' : 'none';
+        }
+
+        requirePkceCheckbox.addEventListener('change', togglePkceMethods);
+        togglePkceMethods(); // Set initial state
+      }
+    });
+  </script>
+</div>

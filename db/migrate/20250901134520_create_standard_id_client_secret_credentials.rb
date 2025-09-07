@@ -3,7 +3,9 @@ class CreateStandardIdClientSecretCredentials < ActiveRecord::Migration[7.1]
     create_table :standard_id_client_secret_credentials do |t|
       t.string :name, null: false
 
-      t.string :client_id, null: false, index: { unique: true }
+      t.references :client_application, null: false, foreign_key: { to_table: :standard_id_client_applications }, index: true
+
+      t.string :client_id, null: false, index: true # Denormalized for performance
       t.string :client_secret_digest, null: false
 
       t.string :scopes

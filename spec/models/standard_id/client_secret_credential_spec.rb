@@ -4,9 +4,10 @@ module StandardId
   RSpec.describe ClientSecretCredential, type: :model do
     let(:account) { Account.create!(name: "Service Owner", email: "owner@example.com") }
     let(:identifier) { EmailIdentifier.create!(account:, value: "owner@example.com") }
+    let(:client) { ClientApplication.create!(owner: account, name: "Test Client", redirect_uris: "https://example.com/callback") }
 
     def build_with_linked_credential(attrs = {})
-      cc = described_class.create!({ name: "my-service", client_secret: "topsecret" }.merge(attrs))
+      cc = described_class.create!({ name: "my-service", client_secret: "topsecret", client_application: client }.merge(attrs))
       Credential.create!(identifier:, credentialable: cc)
       cc
     end
@@ -21,19 +22,18 @@ module StandardId
       expect(cc.authenticate_client_secret("wrong")).to be_falsey
     end
 
-    it "generates client_id on create if missing" do
-      cc = build_with_linked_credential(client_id: nil)
-      expect(cc.client_id).to be_present
-      expect(cc.client_id.length).to be >= 10
+    it "sets client_id from client on create" do
+      cc = build_with_linked_credential
+      expect(cc.client_id).to eq(client.client_id)
     end
 
-    it "validates presence and uniqueness of client_id" do
-      first = build_with_linked_credential(client_id: "abc")
-      first.save!
-
-      dup = described_class.new(name: "service-2", client_secret: "topsecret", client_id: "abc")
-      expect(dup.valid?).to be false
-      expect(dup.errors[:client_id]).to include("has already been taken")
+    it "validates presence of client_id" do
+      cc = described_class.new(name: "service-2", client_secret: "topsecret", client_application: client)
+      # Bypass the callback that sets client_id
+      cc.define_singleton_method(:set_client_id_from_client) { }
+      cc.client_id = nil
+      expect(cc.valid?).to be false
+      expect(cc.errors[:client_id]).to include("can't be blank")
     end
 
     it "default active scope returns only active and not revoked" do
