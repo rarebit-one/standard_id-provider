@@ -2,7 +2,7 @@ module StandardId
   class CodeChallenge < ApplicationRecord
     self.table_name = "standard_id_code_challenges"
 
-    REALMS = %w[authentication verify_email verify_phone account_confirmation unlock_account].freeze
+    REALMS = %w[authentication verification].freeze
     CHANNELS = %w[email sms].freeze
 
     validates :realm, presence: true, inclusion: { in: REALMS }
