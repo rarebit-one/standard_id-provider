@@ -6,23 +6,39 @@ RSpec.describe "StandardId Web Social Auth Callbacks", type: :request do
   end
 
   describe "GET /auth/callback/google" do
-    it "signs in and redirects to decoded redirect_uri with notice" do
-      http_get "/auth/callback/google", params: { state: state_for("/dashboard"), email: "user@example.com", name: "Test User", sub: "prov_123" }
+    let(:state) { state_for("/dashboard") }
 
+    before do
+      allow(StandardId.config).to receive(:google_client_id).and_return("google_client_123")
+      allow(StandardId.config).to receive(:google_client_secret).and_return("google-secret")
+      allow(StandardId::SocialProviders::Google).to receive(:exchange_code_for_user_info).and_return(
+        { "email" => "user@example.com", "name" => "Test User", "sub" => "prov_123" }
+      )
+    end
+
+    it "signs in and redirects to decoded redirect_uri with notice" do
+      http_get "/auth/callback/google", params: { state: state, code: "auth_code_123" }
+
+      expect(StandardId::SocialProviders::Google).to have_received(:exchange_code_for_user_info).with(
+        hash_including(code: "auth_code_123")
+      )
       expect(response).to redirect_to("/dashboard")
       follow_redirect! if response.redirect?
-      # After sign-in, a browser session should exist for created account
       account = Account.find_by(email: "user@example.com")
       expect(account).to be_present
       expect(account.sessions.active).to exist
     end
 
-    it "defaults to root path when state missing or invalid" do
-      http_get "/auth/callback/google", params: { email: "user@example.com" }
-      expect(response).to redirect_to("/")
+    it "redirects to login when state missing" do
+      http_get "/auth/callback/google", params: { code: "auth_code_123" }
+      expect(response).to redirect_to(standard_id_web.login_path)
+      expect(flash[:alert]).to include("Missing state parameter")
+    end
 
-      http_get "/auth/callback/google", params: { state: "not_base64", email: "user@example.com" }
-      expect(response).to redirect_to("/")
+    it "redirects to login when state invalid" do
+      http_get "/auth/callback/google", params: { state: "not_base64", code: "auth_code_123" }
+      expect(response).to redirect_to(standard_id_web.login_path)
+      expect(flash[:alert]).to include("Invalid state parameter")
     end
 
     it "redirects to login with error when provider passes error param (access_denied)" do
@@ -45,18 +61,31 @@ RSpec.describe "StandardId Web Social Auth Callbacks", type: :request do
   end
 
   describe "POST /auth/callback/apple" do
-    it "signs in and redirects to decoded redirect_uri with notice" do
-      http_post "/auth/callback/apple", params: { state: state_for("/dashboard"), email: "user@privaterelay.appleid.com", name: "Apple User", sub: "apple_123" }
+    let(:apple_state) { state_for("/dashboard", connection: "apple") }
 
+    before do
+      allow(StandardId::SocialProviders::Apple).to receive(:exchange_code_for_user_info).and_return(
+        { "email" => "user@privaterelay.appleid.com", "name" => "Apple User", "sub" => "apple_123" }
+      )
+    end
+
+    it "signs in and redirects to decoded redirect_uri with notice" do
+      http_post "/auth/callback/apple", params: { state: apple_state, code: "apple_code_123" }
+
+      expect(StandardId::SocialProviders::Apple).to have_received(:exchange_code_for_user_info).with(
+        hash_including(code: "apple_code_123", redirect_uri: "http://www.example.com/auth/callback/apple")
+      )
       expect(response).to redirect_to("/dashboard")
     end
 
-    it "defaults to root path when state missing or invalid" do
+    it "redirects to login when state missing or invalid" do
       http_post "/auth/callback/apple", params: { email: "user@privaterelay.appleid.com" }
-      expect(response).to redirect_to("/")
+      expect(response).to redirect_to(standard_id_web.login_path)
+      expect(flash[:alert]).to include("Missing state parameter")
 
       http_post "/auth/callback/apple", params: { state: "not_base64", email: "user@privaterelay.appleid.com" }
-      expect(response).to redirect_to("/")
+      expect(response).to redirect_to(standard_id_web.login_path)
+      expect(flash[:alert]).to include("Invalid state parameter")
     end
 
     it "redirects to login with error when provider passes error param (access_denied)" do

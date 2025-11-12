@@ -16,7 +16,7 @@ StandardId::ApiEngine.routes.draw do
       resource :token, only: [:create]
 
       namespace :callback do
-        get :google, to: "providers#google"
+        post :google, to: "providers#google"
         post :apple, to: "providers#apple"
       end
     end

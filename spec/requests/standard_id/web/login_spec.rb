@@ -28,15 +28,17 @@ RSpec.describe "StandardId Web Login", type: :request do
 
   describe "POST /login" do
     context "when social login connection is present" do
-      it "redirects to social login URL with connection param" do
-        StandardId.config.define_singleton_method(:default_client_id) { "web_client" }
+      it "redirects directly to Google OAuth" do
+        allow(StandardId.config).to receive(:google_client_id).and_return("google_client_123")
+        allow(StandardId.config).to receive(:google_client_secret).and_return("google-secret")
 
-        http_post "/login", params: { connection: "google-oauth2", redirect_uri: "/after", login: { email: "", password: "" } }
+        http_post "/login", params: { connection: "google", redirect_uri: "/after", login: { email: "", password: "" } }
 
         expect(response).to have_http_status(:found)
-        expect(response.location).to start_with("http://www.example.com/api/authorize?")
-        expect(response.location).to include("connection=google-oauth2")
-        expect(response.location).to include("client_id=web_client")
+        expect(response.location).to start_with("https://accounts.google.com/o/oauth2/v2/auth?")
+        expect(response.location).to include("client_id=google_client_123")
+        expect(response.location).to include("state=")
+        expect(response.location).to include("redirect_uri=" + CGI.escape("http://www.example.com/auth/callback/google"))
       end
     end
 

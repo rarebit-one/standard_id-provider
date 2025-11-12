@@ -167,8 +167,18 @@ StandardId.configure do |config|
   config.social.apple_private_key = ENV["APPLE_PRIVATE_KEY"]
   config.social.apple_key_id = ENV["APPLE_KEY_ID"]
   config.social.apple_team_id = ENV["APPLE_TEAM_ID"]
+
+  # Optional: adjust which attributes are persisted during social signup
+  config.social.social_account_attributes = ->(user_info:, provider:) {
+    {
+      email: user_info[:email],
+      name: user_info[:name] || user_info[:given_name]
+    }
+  }
 end
 ```
+
+`user_info` is an indifferent-access hash containing at least `email`, `name`, and `provider_id`.
 
 ### Passwordless Authentication
 
@@ -222,7 +232,7 @@ redirect_to "/api/authorize?" + {
   response_type: "code",
   client_id: "your_client_id",
   redirect_uri: "https://your-app.com/callback",
-  connection: "google-oauth2"
+  connection: "google"
 }.to_query
 
 # Apple login
