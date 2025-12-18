@@ -81,8 +81,15 @@ RSpec.describe StandardId::ServiceSession, type: :model do
   end
 
   describe "class methods" do
-    describe ".default_expiry" do
-      it "returns 90 days from now" do
+    describe ".expiry" do
+      it "returns configured service_session_lifetime from now" do
+        travel_to Time.current do
+          expected_expiry = StandardId.config.session.service_session_lifetime.seconds.from_now
+          expect(StandardId::ServiceSession.default_expiry).to eq(expected_expiry)
+        end
+      end
+
+      it "defaults to 90 days" do
         travel_to Time.current do
           expect(StandardId::ServiceSession.default_expiry).to eq(90.days.from_now)
         end
