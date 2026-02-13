@@ -90,7 +90,7 @@ module StandardId
     def self.all_verification_keys
       return [] unless asymmetric?
 
-      [{ kid: key_id, key: verification_key }] + previous_keys
+      [{ kid: key_id, key: verification_key, algorithm: algorithm }] + previous_keys
     end
 
     def self.reset_cached_key!
@@ -170,7 +170,8 @@ module StandardId
 
       @jwks ||= begin
         exported_keys = all_verification_keys.map do |entry|
-          JWT::JWK.new(entry[:key], kid: entry[:kid]).export
+          jwk = JWT::JWK.new(entry[:key], kid: entry[:kid]).export
+          jwk.merge(alg: entry[:algorithm], use: "sig")
         end
         { keys: exported_keys }
       end

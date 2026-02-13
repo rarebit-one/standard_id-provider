@@ -239,6 +239,8 @@ RSpec.describe StandardId::JwtService do
 
         expect(key[:kty]).to eq("RSA")
         expect(key[:kid]).to eq(described_class.key_id)
+        expect(key[:alg]).to eq("RS256")
+        expect(key[:use]).to eq("sig")
         expect(key[:n]).to be_present # modulus
         expect(key[:e]).to be_present # exponent
       end
@@ -259,8 +261,7 @@ RSpec.describe StandardId::JwtService do
 
         # Create a JWKS from the exported keys
         jwk_set = JWT::JWK::Set.new(jwks)
-        algorithms = jwks[:keys].map { |k| k[:alg] }.compact
-        algorithms = ["RS256"] if algorithms.empty?
+        algorithms = jwks[:keys].map { |k| k[:alg] }
 
         decoded = JWT.decode(token, nil, true, { algorithms: algorithms, jwks: jwk_set })
         expect(decoded.first["sub"]).to eq("user-123")
@@ -306,6 +307,8 @@ RSpec.describe StandardId::JwtService do
 
         expect(key[:kty]).to eq("EC")
         expect(key[:kid]).to eq(described_class.key_id)
+        expect(key[:alg]).to eq("ES256")
+        expect(key[:use]).to eq("sig")
         expect(key[:crv]).to be_present # curve
         expect(key[:x]).to be_present
         expect(key[:y]).to be_present
@@ -563,11 +566,14 @@ RSpec.describe StandardId::JwtService do
       expect(decoded["sub"]).to eq("ec-user")
     end
 
-    it "JWKS contains both RSA and EC keys" do
+    it "JWKS contains both RSA and EC keys with correct alg and use" do
       jwks = described_class.jwks
       key_types = jwks[:keys].map { |k| k[:kty] }
+      algorithms = jwks[:keys].map { |k| k[:alg] }
 
       expect(key_types).to contain_exactly("EC", "RSA")
+      expect(algorithms).to contain_exactly("ES256", "RS256")
+      jwks[:keys].each { |k| expect(k[:use]).to eq("sig") }
     end
 
     it "new tokens use the new EC key's kid" do

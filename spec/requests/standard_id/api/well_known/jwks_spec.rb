@@ -44,6 +44,8 @@ RSpec.describe "StandardId API JWKS Endpoint", type: :request do
         key = json_body["keys"].first
         expect(key["kty"]).to eq("RSA")
         expect(key["kid"]).to be_present
+        expect(key["alg"]).to eq("RS256")
+        expect(key["use"]).to eq("sig")
         expect(key["n"]).to be_present
         expect(key["e"]).to be_present
       end
@@ -135,12 +137,15 @@ RSpec.describe "StandardId API JWKS Endpoint", type: :request do
         ])
       end
 
-      it "returns both RSA and EC keys in JWKS" do
+      it "returns both RSA and EC keys in JWKS with alg and use" do
         get "/api/.well-known/jwks.json"
 
         expect(response).to have_http_status(:ok)
         key_types = json_body["keys"].map { |k| k["kty"] }
+        algorithms = json_body["keys"].map { |k| k["alg"] }
         expect(key_types).to contain_exactly("EC", "RSA")
+        expect(algorithms).to contain_exactly("ES256", "RS256")
+        json_body["keys"].each { |k| expect(k["use"]).to eq("sig") }
       end
     end
 
@@ -159,6 +164,8 @@ RSpec.describe "StandardId API JWKS Endpoint", type: :request do
 
         key = json_body["keys"].first
         expect(key["kty"]).to eq("EC")
+        expect(key["alg"]).to eq("ES256")
+        expect(key["use"]).to eq("sig")
         expect(key["crv"]).to be_present
         expect(key["x"]).to be_present
         expect(key["y"]).to be_present
