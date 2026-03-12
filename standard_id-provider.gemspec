@@ -3,24 +3,23 @@ require_relative "lib/standard_id/provider/version"
 Gem::Specification.new do |spec|
   spec.name        = "standard_id-provider"
   spec.version     = StandardId::Provider::VERSION
-  spec.authors     = [ "TODO: Write your name" ]
-  spec.email       = [ "TODO: Write your email address" ]
-  spec.homepage    = "TODO"
-  spec.summary     = "TODO: Summary of StandardId::Provider."
-  spec.description = "TODO: Description of StandardId::Provider."
+  spec.authors     = [ "Jaryl Sim" ]
+  spec.email       = [ "code@jaryl.dev" ]
+  spec.homepage    = "https://github.com/rarebit-one/standard_id-provider"
+  spec.summary     = "OpenID Connect Identity Provider addon for StandardId."
+  spec.description = "Extends StandardId with full OIDC Identity Provider capabilities: ID tokens, consent management, token introspection, token revocation, and discovery."
   spec.license     = "MIT"
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
-
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
-  spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata["source_code_uri"] = "https://github.com/rarebit-one/standard_id-provider"
+  spec.metadata["changelog_uri"] = "https://github.com/rarebit-one/standard_id-provider/blob/main/CHANGELOG.md"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency "rails", ">= 8.1.2"
+  spec.required_ruby_version = ">= 3.2"
+
+  spec.add_dependency "rails", ">= 8.0"
+  spec.add_dependency "standard_id", "~> 0.3"
 end
