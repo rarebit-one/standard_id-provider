@@ -15,12 +15,7 @@ module StandardId
       end
 
       def create
-        ConsentGrant.active.find_by(
-          account: current_account,
-          client_application: @client
-        )&.revoke!
-
-        ConsentGrant.create!(
+        ConsentGrant.grant!(
           account: current_account,
           client_application: @client,
           scopes: authorization_params[:scope]

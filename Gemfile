@@ -8,7 +8,7 @@ gem "sqlite3"
 
 gem "propshaft"
 
-gem "standard_id", path: "../standard_id"
+gem "standard_id", path: "../standard_id" unless ENV["CI"]
 
 group :development, :test do
   gem "rspec-rails", "~> 8.0"

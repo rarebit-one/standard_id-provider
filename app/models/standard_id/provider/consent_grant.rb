@@ -13,6 +13,15 @@ module StandardId
 
       before_validation :set_granted_at, on: :create
 
+      def self.grant!(account:, client_application:, scopes:)
+        transaction do
+          active.where(account: account, client_application: client_application).each(&:revoke!)
+          create!(account: account, client_application: client_application, scopes: scopes)
+        end
+      rescue ActiveRecord::RecordNotUnique
+        retry
+      end
+
       def revoke!
         update!(revoked_at: Time.current)
       end
