@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount StandardId::Provider::Engine => "/"
   mount StandardId::WebEngine => "/", as: :standard_id_web
 
   # Playground root

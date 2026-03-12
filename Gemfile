@@ -2,8 +2,9 @@ source "https://rubygems.org"
 
 ruby file: ".ruby-version"
 
-# Specify your gem's dependencies in standard_id.gemspec.
-gemspec
+# Load both gemspecs: standard_id (core) and standard_id-provider (addon)
+gemspec name: "standard_id"
+gemspec name: "standard_id-provider"
 
 gem "puma"
 

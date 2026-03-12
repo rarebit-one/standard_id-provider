@@ -5,4 +5,4 @@ load "rails/tasks/engine.rake"
 
 load "rails/tasks/statistics.rake"
 
-require "bundler/gem_tasks"
+Bundler::GemHelper.install_tasks name: "standard_id-provider"

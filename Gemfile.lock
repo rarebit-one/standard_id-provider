@@ -6,6 +6,9 @@ PATH
       jwt (~> 2.7)
       ostruct
       rails (~> 8.0)
+    standard_id-provider (0.1.0)
+      rails (~> 8.0)
+      standard_id (~> 0.3)
 
 GEM
   remote: https://rubygems.org/
@@ -349,6 +352,7 @@ DEPENDENCIES
   standard_id!
   standard_id-apple (~> 0.1.2)
   standard_id-google (~> 0.1.2)
+  standard_id-provider!
   tailwindcss-rails (~> 4.4)
   tailwindcss-ruby (~> 4.2)
   webmock (~> 3.26)
