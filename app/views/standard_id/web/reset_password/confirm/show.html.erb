@@ -1,0 +1,27 @@
+<% content_for :title, "Set New Password" %>
+
+<div class="container">
+  <h1>Set New Password</h1>
+
+  <p>Enter your new password below.</p>
+
+  <%= form_with url: reset_password_confirm_path, method: :patch, local: true do |form| %>
+    <%= form.hidden_field :token, value: params[:token] %>
+
+    <div class="form-group">
+      <%= form.label :password, "New Password" %>
+      <%= form.password_field :password, required: true, autofocus: true, minlength: 8, placeholder: "Enter new password (minimum 8 characters)" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :password_confirmation, "Confirm New Password" %>
+      <%= form.password_field :password_confirmation, required: true, minlength: 8, placeholder: "Confirm new password" %>
+    </div>
+
+    <%= form.submit "Update Password", class: "btn" %>
+  <% end %>
+
+  <div class="text-center mt-3">
+    <%= link_to "Back to Sign In", login_path %>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+{
+  "name": "StandardId Ruby Development",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "forwardPorts": [
+    3000
+  ],
+  "postCreateCommand": {
+    "bundle-install": "bundle install"
+  },
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspaces/standard_id"
+}

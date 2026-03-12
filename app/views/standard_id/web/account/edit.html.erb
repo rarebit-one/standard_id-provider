@@ -1,0 +1,26 @@
+<% content_for :title, "Edit Account" %>
+
+<div class="container">
+  <h1>Edit Account</h1>
+
+  <% if @account.errors.any? %>
+    <div class="alert alert-error">
+      <ul>
+        <% @account.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @account, url: account_path, method: :patch, local: true do |form| %>
+    <!-- Add account fields here when available -->
+    <p>No editable fields are defined yet.</p>
+
+    <%= form.submit "Save Changes", class: "btn" %>
+  <% end %>
+
+  <div class="mt-3">
+    <%= link_to "Back", account_path, class: "btn btn-secondary" %>
+  </div>
+</div>

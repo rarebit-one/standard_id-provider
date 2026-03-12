@@ -1,0 +1,43 @@
+<!-- Reusable Page Header Partial -->
+<!-- Usage: render partial: "shared/page_header", locals: { breadcrumbs: [{name: "Admin", href: "/admin"}, {name: "Accounts"}], title: "Accounts", tags: ["Full-time", "Remote"], actions: true } -->
+<div class="lg:flex lg:items-center lg:justify-between">
+  <div class="min-w-0 flex-1">
+    <% if (breadcrumbs || []).any? %>
+      <nav aria-label="Breadcrumb" class="flex">
+        <ol role="list" class="flex items-center space-x-4">
+          <% breadcrumbs.each_with_index do |crumb, idx| %>
+            <li>
+              <div class="flex items-center">
+                <% if idx > 0 %>
+                  <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5 shrink-0 text-gray-400 dark:text-gray-500">
+                    <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+                  </svg>
+                <% end %>
+                <% if crumb[:href].present? %>
+                  <a href="<%= crumb[:href] %>" class="ml-<%= idx > 0 ? 4 : 0 %> text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"><%= crumb[:name] %></a>
+                <% else %>
+                  <span class="ml-<%= idx > 0 ? 4 : 0 %> text-sm font-medium text-gray-500 dark:text-gray-400"><%= crumb[:name] %></span>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </nav>
+    <% end %>
+    <h2 class="mt-2 text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight dark:text-white"><%= title %></h2>
+    <% if (tags || []).any? %>
+      <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+        <% tags.each do |tag| %>
+          <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
+            <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-300 dark:bg-white/10 dark:text-gray-300 dark:ring-white/10"><%= tag %></span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <% if block_given? %>
+    <div class="mt-5 flex lg:ml-4 lg:mt-0">
+      <%= yield %>
+    </div>
+  <% end %>
+</div>

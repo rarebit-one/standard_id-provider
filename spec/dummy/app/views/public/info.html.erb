@@ -1,0 +1,142 @@
+<!-- Page Header -->
+<div class="mb-8">
+  <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight dark:text-white">
+    Dashboard
+  </h1>
+  <p class="mt-1 text-sm leading-6 text-gray-500 dark:text-gray-400">
+    Explore different authentication flows and methods supported by StandardId.
+  </p>
+</div>
+
+<!-- Stats Overview -->
+<div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow dark:bg-gray-800">
+    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Active Sessions</dt>
+    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">12</dd>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow dark:bg-gray-800">
+    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">API Requests</dt>
+    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">1,234</dd>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow dark:bg-gray-800">
+    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Registered Users</dt>
+    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">89</dd>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow dark:bg-gray-800">
+    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Success Rate</dt>
+    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">99.9%</dd>
+  </div>
+</div>
+
+<!-- Authentication Playground -->
+<div class="mb-8">
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Authentication Playground</h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Test different authentication flows and methods.</p>
+
+      <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+          <h3 class="text-sm font-medium text-gray-900 dark:text-white">Web Authentication</h3>
+          <ul class="mt-3 space-y-2">
+            <li><a href="/demos/web" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Cookie Sessions</a></li>
+            <li><a href="/demos/social" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Social Login</a></li>
+            <li><a href="/login" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Login Page</a></li>
+            <li><a href="/signup" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Registration</a></li>
+          </ul>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+          <h3 class="text-sm font-medium text-gray-900 dark:text-white">API Authentication</h3>
+          <ul class="mt-3 space-y-2">
+            <li><a href="/demos/m2m" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">M2M (Client Credentials)</a></li>
+            <li><a href="/demos/mobile" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Mobile OAuth + PKCE</a></li>
+            <li><a href="/api/ping" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">API Ping</a></li>
+            <li><a href="/api/v1/protected" class="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Protected Endpoint</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Administration</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your StandardId configuration and settings.</p>
+      <div class="mt-4 flex space-x-3">
+        <a href="/admin" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+          Admin Dashboard
+        </a>
+        <a href="/admin" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
+          Admin Panel
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Account Management</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your account and authentication settings.</p>
+      <div class="mt-4 flex space-x-3">
+        <% if authenticated? %>
+          <a href="/account" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+            My Account
+          </a>
+          <a href="/sessions" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
+            Active Sessions
+          </a>
+        <% else %>
+          <a href="/reset_password/start" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+            Reset Password
+          </a>
+          <a href="/test_api" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
+            Test API
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resources & Documentation -->
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Getting Started</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Learn how to integrate StandardId into your application.</p>
+      <div class="mt-4">
+        <a href="/demos" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+          View All Demos →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">API Reference</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Explore the complete API documentation and endpoints.</p>
+      <div class="mt-4">
+        <a href="/api/ping" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+          Test API Endpoints →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Configuration</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Configure OAuth providers and authentication settings.</p>
+      <div class="mt-4">
+        <a href="/admin" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+          Admin Settings →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

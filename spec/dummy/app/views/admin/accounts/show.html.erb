@@ -1,0 +1,132 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <%= render partial: "shared/page_header", locals: {
+        breadcrumbs: [
+          { name: "Admin", href: "/admin" },
+          { name: "Accounts", href: "/admin/accounts" },
+          { name: "Account ##{@account.id}" }
+        ],
+        title: "Account Details",
+        tags: [],
+        actions: false
+      } %>
+
+  <!-- Account Info -->
+  <div class="mt-8 overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Account Information</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Basic account details and metadata.</p>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6 dark:border-gray-700">
+      <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Account ID</dt>
+          <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @account.id %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</dt>
+          <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @account.name || 'Not set' %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</dt>
+          <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @account.email || 'Not set' %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
+          <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= l(@account.created_at, format: :long) rescue @account.created_at.strftime("%B %d, %Y at %H:%M") %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Identifiers -->
+  <div class="mt-8 overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Identifiers</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Authentication identifiers associated with this account.</p>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-700">
+      <% if @identifiers.any? %>
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @identifiers.each do |identifier| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="size-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-medium dark:bg-gray-700 dark:text-gray-300">
+                      <%= identifier.type.demodulize.first %>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white"><%= identifier.type.demodulize %></div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400"><%= identifier.value %></div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <% if identifier.verified? %>
+                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-500/50">Verified</span>
+                  <% else %>
+                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-300 dark:ring-yellow-500/50">Unverified</span>
+                  <% end %>
+                  <span class="text-xs text-gray-500 dark:text-gray-400"><%= identifier.credentials.count %> credential(s)</span>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="px-4 py-5 sm:px-6">
+          <p class="text-sm text-gray-500 dark:text-gray-400">No identifiers found for this account.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Sessions -->
+  <div class="mt-8 overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Recent Sessions</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">Last 10 sessions for this account.</p>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-700">
+      <% if @sessions.any? %>
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @sessions.each do |session| %>
+            <% expired = session.respond_to?(:expires_at) && session.expires_at.present? && session.expires_at < Time.current %>
+            <% revoked = session.respond_to?(:revoked_at) && session.revoked_at.present? %>
+            <% active = !expired && !revoked %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="size-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-medium dark:bg-indigo-900/40 dark:text-indigo-300">
+                      <%= session.type.demodulize.first %>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white"><%= session.type.demodulize %></div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                      ID: <%= session.id %> • Created <%= l(session.created_at, format: :short) rescue session.created_at.strftime("%b %d, %Y") %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <% if revoked %>
+                    <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/50">Revoked</span>
+                  <% elsif expired %>
+                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-300 dark:ring-yellow-500/50">Expired</span>
+                  <% else %>
+                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-500/50">Active</span>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="px-4 py-5 sm:px-6">
+          <p class="text-sm text-gray-500 dark:text-gray-400">No sessions found for this account.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

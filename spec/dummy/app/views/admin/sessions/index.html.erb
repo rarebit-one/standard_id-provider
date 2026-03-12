@@ -1,0 +1,91 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <%= render partial: "shared/page_header", locals: {
+        breadcrumbs: [
+          { name: "Admin", href: "/admin" },
+          { name: "Sessions" }
+        ],
+        title: "Sessions",
+        tags: [],
+        actions: false
+      } %>
+
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @sessions.any? %>
+          <table class="relative min-w-full divide-y divide-gray-300 dark:divide-white/15">
+            <thead>
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 dark:text-white">Session</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Account</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Type</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Last Used</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
+                <th scope="col" class="py-3.5 pl-3 pr-4 sm:pr-0">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white dark:divide-white/10 dark:bg-gray-900">
+              <% @sessions.each do |session| %>
+                <% now = Time.current %>
+                <% expired = session.respond_to?(:expires_at) && session.expires_at.present? && session.expires_at < now %>
+                <% revoked = session.respond_to?(:revoked_at) && session.revoked_at.present? %>
+                <% active = !expired && !revoked %>
+                <% type_label = (session.type || session.class.name).demodulize.sub('Session','').presence || 'Session' %>
+                <tr>
+                  <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                    <div class="flex items-center">
+                      <div class="size-11 shrink-0">
+                        <div class="size-11 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-semibold dark:bg-indigo-900/40 dark:text-indigo-300">ID</div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="font-medium text-gray-900 dark:text-white"><%= session.id %></div>
+                        <div class="mt-1 text-gray-500 dark:text-gray-400">
+                          Created <%= l(session.created_at, format: :short) rescue session.created_at.strftime("%b %d, %Y %H:%M") %>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                    <% if session.account %>
+                      <div class="text-gray-900 dark:text-white"><%= session.account.name || 'Unnamed' %></div>
+                      <div class="mt-1 text-gray-500 dark:text-gray-400">ID: <%= session.account.id %></div>
+                    <% else %>
+                      <span class="text-gray-400 dark:text-gray-500">No account</span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="text-gray-900 dark:text-white"><%= type_label %></div>
+                    <% if session.respond_to?(:ip_address) && session.ip_address.present? %>
+                      <div class="mt-1 text-gray-500 dark:text-gray-400">IP: <%= session.ip_address %></div>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 dark:text-white">
+                    <%= l(session.updated_at, format: :short) rescue session.updated_at.strftime("%b %d, %Y %H:%M") %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400">
+                    <% if revoked %>
+                      <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/50">Revoked</span>
+                    <% elsif expired %>
+                      <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-300 dark:ring-yellow-500/50">Expired</span>
+                    <% else %>
+                      <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-500/50">Active</span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                    <% if active %>
+                      <%= button_to "Revoke", admin_session_path(session), method: :delete, data: { confirm: "Revoke this session?" }, class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 dark:bg-red-500 dark:hover:bg-red-400 dark:focus-visible:outline-red-500" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="rounded-md p-6 text-sm text-gray-600 ring-1 ring-inset ring-gray-200 dark:text-gray-300 dark:ring-white/10">No sessions found.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50 dark:bg-gray-900" lang="en">
+  <head>
+    <title>StandardID Auth</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+  </head>
+
+  <body class="h-full">
+    <%- if respond_to?(:flash) && flash.any? %>
+      <%- flash.each do |type, message| %>
+        <%- key = type.to_s %>
+        <%- bg, border, text = case key
+              when 'success', 'notice', 'info' then ['bg-green-50 dark:bg-green-900/20', 'ring-green-600/10 dark:ring-white/10', 'text-green-700 dark:text-green-300']
+              when 'alert', 'error' then ['bg-red-50 dark:bg-red-900/20', 'ring-red-600/10 dark:ring-white/10', 'text-red-700 dark:text-red-300']
+              when 'warning' then ['bg-yellow-50 dark:bg-yellow-900/20', 'ring-yellow-600/10 dark:ring-white/10', 'text-yellow-800 dark:text-yellow-300']
+              else ['bg-gray-50 dark:bg-gray-800/30', 'ring-gray-600/10 dark:ring-white/10', 'text-gray-700 dark:text-gray-300']
+            end %>
+        <div class="mb-4 rounded-md p-4 ring-1 ring-inset <%= [bg, border].join(' ') %>">
+          <div class="text-sm <%= text %>"><%= message %></div>
+        </div>
+      <%- end %>
+    <%- end %>
+
+    <%= yield %>
+  </body>
+</html>
