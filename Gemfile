@@ -17,3 +17,5 @@ end
 
 # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
 gem "rubocop-rails-omakase", require: false
+gem "brakeman", require: false
+gem "bundler-audit", require: false
