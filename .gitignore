@@ -1,5 +1,4 @@
 /.bundle/
-/Gemfile.lock
 /doc/
 /log/*.log
 /pkg/
@@ -12,3 +11,5 @@
 
 # Git worktrees
 .worktrees/
+
+*.gem
