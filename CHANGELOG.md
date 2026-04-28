@@ -7,17 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-<<<<<<< HEAD
 ### Added
 
 - `.editorconfig` for consistent indentation and whitespace across editors.
 - `AGENTS.md` describing the OIDC engine surface (ConsentGrant + RevokedToken models, ID token service, extension flows) for AI coding agents and new contributors.
 - `lefthook.yml` plus `.lefthook/` scripts for pre-push checks (whitespace, signed commits, RuboCop, Brakeman, RSpec) and post-checkout/rewrite/merge `bundle install` sync. Install via `brew install lefthook && lefthook install`; skip with `LEFTHOOK=0`.
-=======
+
 ### Removed
 
 - **BREAKING:** Dropped support for Ruby < 4.0. The gem now requires Ruby 4.0+, matching the upstream [`standard_id`](https://github.com/rarebit-one/standard_id) gem ([standard_id#195](https://github.com/rarebit-one/standard_id/pull/195)).
->>>>>>> e35278f (chore: drop Ruby < 4.0, migrate CI to reusable workflow, add security scans)
 
 ### Changed
 
