@@ -21,7 +21,7 @@ jobs:
       lint-command: 'bundle exec rubocop --config .rubocop.yml -f github'
       lint-cache-paths: |
         tmp/rubocop
-      lint-cache-key: rubocop-${{ runner.os }}-4.0.3-${{ hashFiles('**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile', '*.gemspec') }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
+      lint-cache-key: rubocop-Linux-4.0.3-${{ hashFiles('**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile', '*.gemspec') }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
       extra-lint-commands: |
         bundle exec brakeman --no-pager --quiet
         bundle exec bundle-audit check --update
