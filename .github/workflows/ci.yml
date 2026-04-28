@@ -10,30 +10,18 @@ permissions:
   pull-requests: read
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    env:
-      RUBY_VERSION: ruby-4.0.1
-      RUBOCOP_CACHE_ROOT: tmp/rubocop
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-          bundler-cache: true
-
-      - name: Prepare RuboCop cache
-        uses: actions/cache@v5
-        env:
-          DEPENDENCIES_HASH: ${{ hashFiles('**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile', '*.gemspec') }}
-        with:
-          path: ${{ env.RUBOCOP_CACHE_ROOT }}
-          key: rubocop-${{ runner.os }}-${{ env.RUBY_VERSION }}-${{ env.DEPENDENCIES_HASH }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
-          restore-keys: |
-            rubocop-${{ runner.os }}-${{ env.RUBY_VERSION }}-${{ env.DEPENDENCIES_HASH }}-
-
-      - name: Lint code for consistent style
-        run: bin/rubocop -f github
+  ci:
+    uses: rarebit-one/.github/.github/workflows/reusable-gem-ci.yml@v1
+    with:
+      # Test job is skipped (lint-only) until the spec/dummy app is reconciled
+      # with the upstream standard_id config rename (StandardConfig -> StandardId::ConfigSchema).
+      # Tracked separately; re-enable the matrix once the dummy app boots cleanly.
+      ruby-versions: '[]'
+      lint-ruby-version: "4.0.3"
+      lint-command: 'bundle exec rubocop --config .rubocop.yml -f github'
+      lint-cache-paths: |
+        tmp/rubocop
+      lint-cache-key: rubocop-${{ runner.os }}-4.0.3-${{ hashFiles('**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile', '*.gemspec') }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
+      extra-lint-commands: |
+        bundle exec brakeman --no-pager --quiet
+        bundle exec bundle-audit check --update
