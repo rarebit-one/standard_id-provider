@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.editorconfig` for consistent indentation and whitespace across editors.
 - `AGENTS.md` describing the OIDC engine surface (ConsentGrant + RevokedToken models, ID token service, extension flows) for AI coding agents and new contributors.
 - `lefthook.yml` plus `.lefthook/` scripts for pre-push checks (whitespace, signed commits, RuboCop, Brakeman, RSpec) and post-checkout/rewrite/merge `bundle install` sync. Install via `brew install lefthook && lefthook install`; skip with `LEFTHOOK=0`.
+- SimpleCov branch coverage reporting wired into `spec/spec_helper.rb`. Reports are emitted to `coverage/` (gitignored). No minimum threshold is enforced — this enables visibility today, with a threshold to follow once the spec suite is reconciled with upstream `standard_id`.
 - Brakeman static analysis and bundler-audit dependency scanning now run on every CI build, surfacing security issues before they reach a release.
 
 ### Changed
