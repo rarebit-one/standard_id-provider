@@ -1,4 +1,4 @@
-StandardConfig.schema.draw do
+StandardId::ConfigSchema.define do
   scope :provider do
     field :id_token_lifetime, type: :integer, default: 3600
     field :scopes_supported, type: :array, default: -> { %w[openid profile email offline_access] }
