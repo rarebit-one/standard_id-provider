@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- CI workflow migrated to the shared `rarebit-one/.github` reusable workflow (`reusable-gem-ci.yml@v1`); `.github/workflows/ci.yml` is now a thin shim. The lint job runs RuboCop with the existing result cache, plus Brakeman and bundler-audit security scans via `extra-lint-commands`. The test matrix is intentionally empty (`ruby-versions: '[]'`) — the dummy app still references the legacy `StandardConfig` constant that was removed upstream, so RSpec cannot boot. Re-enabling the matrix is tracked as follow-up work.
+- CI workflow migrated to the shared `rarebit-one/.github` reusable workflow (`reusable-gem-ci.yml@v1`); `.github/workflows/ci.yml` is now a thin shim. The lint job runs RuboCop plus Brakeman and bundler-audit security scans via `extra-lint-commands`. The test matrix is intentionally empty (`ruby-versions: '[]'`) — the dummy app still references the legacy `StandardConfig` constant that was removed upstream, so RSpec cannot boot. Re-enabling the matrix is tracked as follow-up work. The previous bespoke RuboCop result cache is dropped because `hashFiles` cannot be evaluated when resolving reusable-workflow inputs; lint runs on this gem are short enough that the cache is not worth the extra plumbing.
 - Release workflow migrated to the shared `rarebit-one/.github` reusable workflow (`reusable-gem-release.yml@v1`); `.github/workflows/release.yml` is now a thin shim.
 
 ### Added
