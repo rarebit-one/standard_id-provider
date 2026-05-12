@@ -24,3 +24,9 @@ Then work inside `.worktrees/<name>/` for the rest of the session.
 **Why this matters:** Working directly on the main checkout causes cross-contamination between sessions — uncommitted changes, wrong branches, and dirty state leak into unrelated work. Worktrees eliminate this entirely.
 
 See the `/worktree` and `/start` skills for full conventions and flags.
+
+## Consumers
+
+`standard_id-provider` is scaffolding for building StandardId provider plugins (like `standard_id-apple` and `standard_id-google`). It has **no direct consumers** in the rarebit-one workspace — apps consume the concrete provider gems, not this scaffold.
+
+If this gem is ever published with consumers, document them here and add it to the consumer matrix in the workspace-level `/rollout-gem` skill's `SKILL.md` (one directory above this repo).
