@@ -6,6 +6,12 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    # standard_id is a sibling workspace gem consumed via `path:` for local dev
+    # (gated by `unless ENV["CI"]` in the Gemfile). Dependabot's evaluation env
+    # doesn't set CI=true, so it sees the path ref and fails with
+    # `path_dependencies_not_reachable`. Ignore the dep entirely.
+    ignore:
+      - dependency-name: "standard_id"
     groups:
       development-dependencies:
         dependency-type: "development"
