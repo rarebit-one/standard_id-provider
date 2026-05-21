@@ -17,7 +17,7 @@ jobs:
       # with the upstream standard_id config rename (StandardConfig -> StandardId::ConfigSchema).
       # Tracked separately; re-enable the matrix once the dummy app boots cleanly.
       ruby-versions: '[]'
-      lint-ruby-version: "4.0.3"
+      lint-ruby-version: "4.0.4"
       lint-command: 'bundle exec rubocop --config .rubocop.yml -f github'
       extra-lint-commands: |
         bundle exec brakeman --no-pager --quiet
