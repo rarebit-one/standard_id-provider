@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   ci:
-    uses: rarebit-one/.github/.github/workflows/reusable-gem-ci.yml@v1
+    uses: rarebit-one/.github/.github/workflows/reusable-gem-ci.yml@v2
     with:
       # Test job is skipped (lint-only) until the spec/dummy app is reconciled
       # with the upstream standard_id config rename (StandardConfig -> StandardId::ConfigSchema).
