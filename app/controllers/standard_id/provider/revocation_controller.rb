@@ -1,6 +1,15 @@
 module StandardId
   module Provider
     class RevocationController < ApplicationController
+      # Throttle by IP (30 per 15 min) BEFORE client authentication so this
+      # credential-guessable RFC 7009 endpoint can't be brute-forced. Override
+      # with RATE_LIMIT_REVOKE_PER_IP.
+      rate_limit to: (ENV["RATE_LIMIT_REVOKE_PER_IP"] || 30).to_i,
+                 within: 15.minutes,
+                 by: -> { request.remote_ip },
+                 name: "provider-revoke-ip",
+                 store: StandardId::RateLimitHandling::RATE_LIMIT_STORE
+
       before_action :authenticate_client!
 
       def create

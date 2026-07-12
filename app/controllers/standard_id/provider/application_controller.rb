@@ -1,6 +1,11 @@
 module StandardId
   module Provider
     class ApplicationController < ActionController::API
+      # Provides the shared rate-limit store + the TooManyRequests -> JSON 429
+      # handler (Retry-After header included), matching the standard_id engine's
+      # rate-limit response shape. Individual controllers declare their limits.
+      include StandardId::RateLimitHandling
+
       rescue_from StandardId::OAuthError do |e|
         render json: { error: e.oauth_error_code, error_description: e.message }, status: e.http_status
       end
