@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Per-IP rate limiting on the token introspection (RFC 7662) and revocation
+  (RFC 7009) endpoints.** Both are credential-guessable; the throttle runs
+  *before* client authentication (30/15min by IP, override with
+  `RATE_LIMIT_INTROSPECT_PER_IP` / `RATE_LIMIT_REVOKE_PER_IP`). Reuses the
+  `standard_id` engine's rate-limit store and JSON 429 handler.
+
 ## [0.2.0] - 2026-04-29
 
 ### Added
