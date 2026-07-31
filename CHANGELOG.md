@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The dummy app now boots and the test suite runs.** `spec/dummy/config/database.yml`
+  now sets `migrations_paths` explicitly to the union of the dummy app's own
+  migrations and this engine's. Previously Rails fell back to
+  `ActiveRecord::Migrator.migrations_paths`, whose default is the *relative*
+  string `"db/migrate"` — resolved against RSpec's working directory (the gem
+  root) that pointed at the engine's migrations, while `bin/rails app:db:migrate`
+  used the dummy app's absolute path. The two disagreed, so
+  `maintain_test_schema!` reported this engine's own migrations as permanently
+  pending and aborted the suite before a single example ran. The CI workflow
+  blamed an upstream `StandardConfig` rename; that was not the cause.
+- `spec/support/oauth_helpers.rb` passed `redirect_uris` as an Array.
+  `StandardId::ClientApplication` stores it as a whitespace-separated String
+  (`#redirect_uris_array` splits on `/\s+/`), so every client-creating example
+  failed validation.
+
+### Added
+
+- `spec/dummy/db/schema.rb` and the vendored `standard_id` migrations under
+  `spec/dummy/db/migrate/*.standard_id.rb`, so a fresh checkout can build the
+  test database with `bin/rails app:db:test:prepare`. Refresh them with
+  `bin/rails app:standard_id:install:migrations && bin/rails app:db:migrate`.
+
+### Changed
+
+- **CI runs the real test suite again.** `ruby-versions` is now the family
+  matrix (`4.0.0`–`4.0.4`) instead of `'[]'` (lint-only), with a
+  `pre-test-commands` step to prepare the dummy database. `extra-lint-commands`
+  is aligned with the rest of the family (`brakeman --no-pager --force`,
+  `bundler-audit --update`).
+- RuboCop excludes the generated `spec/dummy/db/schema.rb` and the vendored
+  `standard_id` migration copies — upstream artifacts this gem does not own.
+
 ## [0.3.0] - 2026-07-12
 
 ### Added

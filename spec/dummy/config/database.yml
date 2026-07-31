@@ -4,10 +4,28 @@
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem "sqlite3"
 #
+# `migrations_paths` is set EXPLICITLY and must stay that way.
+#
+# Without it, Rails falls back to `ActiveRecord::Migrator.migrations_paths`,
+# whose default is the *relative* string "db/migrate". RSpec runs from the gem
+# root, so that resolved to the ENGINE's `db/migrate` — while `bin/rails
+# app:db:migrate` used the dummy app's absolute path. The two disagreed, so
+# `maintain_test_schema!` in `spec/rails_helper.rb` always reported the
+# engine's own migrations as pending and aborted the suite before a single
+# example ran. That mismatch — not the `StandardConfig` rename the CI comment
+# blamed — is why the test matrix was disabled.
+#
+# The list below is the union both sides need: the dummy app's own migrations
+# (which vendor `standard_id`'s via `bin/rails app:standard_id:install:migrations`)
+# plus this engine's, which are never copied in because they load from the
+# engine root.
 default: &default
   adapter: sqlite3
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
+  migrations_paths:
+    - <%= File.expand_path("../db/migrate", __dir__) %>
+    - <%= File.expand_path("../../../db/migrate", __dir__) %>
 
 development:
   <<: *default
