@@ -10,6 +10,7 @@ module StandardId
                  name: "provider-revoke-ip",
                  store: StandardId::RateLimitHandling::RATE_LIMIT_STORE
 
+      before_action :require_revocation_enabled!
       before_action :authenticate_client!
 
       def create
@@ -32,6 +33,16 @@ module StandardId
         )
 
         head :ok
+      end
+
+      private
+
+      # `config.provider.revocation_enabled` was declared from the start and
+      # read by nothing, so the switch silently did not work. Enforced here,
+      # 404 rather than 403 so a disabled endpoint is indistinguishable from
+      # one that does not exist — matching how core gates introspection.
+      def require_revocation_enabled!
+        head(:not_found) unless StandardId.config.provider.revocation_enabled
       end
     end
   end

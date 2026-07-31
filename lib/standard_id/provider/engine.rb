@@ -20,6 +20,17 @@ module StandardId
           StandardId::Provider::Extensions::AuthorizationCodeFlowExt
         )
       end
+
+      # Controllers are reloadable, so this cannot live in the initializer
+      # above: referencing the constant there would pin the boot-time class and
+      # every `reload!` in development would drop the extension. `to_prepare`
+      # runs on each reload, and `prepend` of an already-prepended module is a
+      # no-op, so re-running it is free.
+      config.to_prepare do
+        StandardId::Api::Oauth::IntrospectionsController.prepend(
+          StandardId::Provider::Extensions::IntrospectionsControllerExt
+        )
+      end
     end
   end
 end
