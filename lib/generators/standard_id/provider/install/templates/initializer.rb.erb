@@ -1,0 +1,56 @@
+# StandardId::Provider — OpenID Connect Identity Provider addon for StandardId.
+#
+# This engine EXTENDS standard_id rather than standing alone: it prepends into
+# StandardId's OAuth flow classes and contributes its token denylist into
+# StandardId's introspection endpoint. Your `standard_id.rb` initializer is
+# still the primary configuration surface; the settings below are the ones this
+# engine adds, plus the two core settings a provider deployment must revisit.
+
+StandardId.configure do |c|
+  # --- Settings this engine adds -------------------------------------------
+
+  # Lifetime of issued ID tokens, in seconds.
+  # c.provider.id_token_lifetime = 3600
+
+  # Advertised in the discovery document. These describe what YOU are willing
+  # to issue — narrow them rather than widen them.
+  # c.provider.scopes_supported = %w[openid profile email offline_access]
+  # c.provider.claims_supported = %w[sub iss aud exp iat nonce auth_time at_hash email name email_verified]
+  # c.provider.subject_types_supported = %w[public]
+
+  # RFC 7009 token revocation at POST <provider mount>/api/provider/revoke.
+  # When false the endpoint renders 404, indistinguishable from one that does
+  # not exist. This is the endpoint that writes the RevokedToken denylist, so
+  # turning it off means access tokens cannot be revoked before their exp.
+  # c.provider.revocation_enabled = true
+
+  # --- Core settings a provider deployment must revisit --------------------
+
+  # REQUIRED for discovery. The issuer is a stable security identifier
+  # (RFC 8414 §2); clients match it byte-for-byte against their discovery URL
+  # and against the `iss` claim of issued tokens.
+  # c.issuer = "https://auth.example.com"
+
+  # REQUIRED for discovery, and easy to miss. This engine's discovery document
+  # is served from the PROVIDER engine's mount, so — unlike core's own
+  # well-known controllers — it cannot read the ApiEngine mount out of
+  # SCRIPT_NAME. Tell it where the endpoints actually live, or the document
+  # will advertise URLs that 404.
+  #
+  #   c.oauth.discovery_endpoint_base = ->(request:) { "#{request.base_url}/api" }
+  #   # or, for a fixed deployment:
+  #   c.oauth.discovery_endpoint_base = "https://auth.example.com/api"
+
+  # RFC 7662 introspection lives on CORE's endpoint (POST /oauth/introspect),
+  # which is OFF by default — it 404s until you opt in. This engine contributes
+  # its RevokedToken denylist into it, so a revoked access token introspects as
+  # inactive rather than staying active until its exp.
+  # c.oauth.introspection_enabled = true
+
+  # Members that cannot be derived — a host-owned authorization shim, a
+  # deliberately narrower scope list. Applied LAST, so they win over everything
+  # above. Setting `issuer` here raises; use c.issuer.
+  # c.oauth.discovery_metadata_overrides = {
+  #   authorization_endpoint: ->(ctx) { "#{ctx[:origin]}/oauth/authorize" }
+  # }
+end

@@ -25,8 +25,16 @@ Then work inside `.worktrees/<name>/` for the rest of the session.
 
 See the `/worktree` and `/start` skills for full conventions and flags.
 
+## What this gem is
+
+`standard_id-provider` is the **OpenID Connect Identity Provider addon** for `standard_id`: ID tokens, consent grants, an access-token revocation denylist, and the OIDC discovery document.
+
+It is **not** "scaffolding for building provider plugins" — that description was wrong and is corrected here. `standard_id-apple` and `standard_id-google` are social-login provider plugins with no relationship to this gem beyond the name.
+
+See `AGENTS.md` for the engine surface and `README.md` for the coupling this gem asks a consumer to accept.
+
 ## Consumers
 
-`standard_id-provider` is scaffolding for building StandardId provider plugins (like `standard_id-apple` and `standard_id-google`). It has **no direct consumers** in the rarebit-one workspace — apps consume the concrete provider gems, not this scaffold.
+**None yet.** No app in the rarebit-one workspace consumes it.
 
-If this gem is ever published with consumers, document them here and add it to the consumer matrix in the workspace-level `/rollout-gem` skill's `SKILL.md` (one directory above this repo).
+If this gem gains consumers, document them here and add it to the consumer matrix in the workspace-level `/rollout-gem` skill's `SKILL.md` (one directory above this repo).

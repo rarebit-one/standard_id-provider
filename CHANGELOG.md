@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Install generator: `rails generate standard_id:provider:install`.** Copies
+  the engine's migrations, writes a fully commented
+  `config/initializers/standard_id_provider.rb`, and mounts the engine in
+  `config/routes.rb`. Idempotent — re-running skips what is already installed.
+  Flags: `--skip-migrations`, `--skip-initializer`, `--skip-routes`,
+  `--mount-path PATH`, `--force`. Brings this gem in line with the five other
+  family gems that ship one.
+
+### Changed
+
+- **A real README.** The previous one was the untouched `rails plugin new`
+  scaffold ("Short description and motivation."). The new one documents what
+  the gem is for, how to install and mount it, the two easily-missed settings
+  (`discovery_endpoint_base`, `introspection_enabled`) — and, prominently, that
+  **this engine `prepend`s into five non-public `standard_id` classes**,
+  including a private controller method, so a consumer understands the coupling
+  they are taking on and why the `~> 0.33` pin and `compat` job exist.
+- `AGENTS.md` refreshed. It documented an introspection controller that no
+  longer exists, the wrong table names (`standard_id_provider_consent_grants`
+  → `standard_id_consent_grants`), a stale `StandardConfig` DSL name, the old
+  `~> 0.3` pin, and lint commands CI no longer runs.
+- `CLAUDE.md` corrected. It described this gem as "scaffolding for building
+  StandardId provider plugins (like `standard_id-apple` and
+  `standard_id-google`)". It is not — it is the OIDC Identity Provider addon,
+  and has no relationship to those social-login plugins.
+
 ### Removed
 
 - **BREAKING: `POST /api/provider/introspect` is gone.** `standard_id` 0.33.0
