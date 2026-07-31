@@ -5,7 +5,11 @@ module OAuthHelpers
       name: name,
       owner: account,
       require_consent: require_consent,
-      redirect_uris: [ "https://example.com/callback" ]
+      # `redirect_uris` is a whitespace-separated STRING column upstream
+      # (StandardId::ClientApplication#redirect_uris_array splits on /\s+/),
+      # not an array. Passing an array serializes to "[\"https://…\"]" and
+      # trips the absolute-URI validation.
+      redirect_uris: "https://example.com/callback"
     )
     credential = StandardId::ClientSecretCredential.create!(
       name: "default",

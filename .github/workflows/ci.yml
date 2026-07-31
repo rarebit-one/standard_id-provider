@@ -13,12 +13,14 @@ jobs:
   ci:
     uses: rarebit-one/.github/.github/workflows/reusable-gem-ci.yml@v2
     with:
-      # Test job is skipped (lint-only) until the spec/dummy app is reconciled
-      # with the upstream standard_id config rename (StandardConfig -> StandardId::ConfigSchema).
-      # Tracked separately; re-enable the matrix once the dummy app boots cleanly.
-      ruby-versions: '[]'
+      ruby-versions: '["4.0.0","4.0.1","4.0.2","4.0.3","4.0.4"]'
       lint-ruby-version: "4.0.4"
       lint-command: 'bundle exec rubocop --config .rubocop.yml -f github'
+      # spec/dummy/storage/ is gitignored, so a fresh checkout has no test
+      # database. db:test:prepare creates it from the committed
+      # spec/dummy/db/schema.rb.
+      pre-test-commands: |
+        bin/rails app:db:test:prepare
       extra-lint-commands: |
-        bundle exec brakeman --no-pager --quiet
-        bundle exec bundle-audit check --update
+        bundle exec brakeman --no-pager --force
+        bundle exec bundler-audit --update
