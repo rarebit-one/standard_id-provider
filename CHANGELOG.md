@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Tightened the `standard_id` dependency from `~> 0.3` to `~> 0.33`.** Both
+  resolve to `< 1.0`, but the old form claimed compatibility back to 0.3 for an
+  engine that `prepend`s into four non-public `StandardId::Oauth` classes —
+  a claim nothing verified, because CI ran no tests. 0.33 is the oldest version
+  the suite has actually been run against. The two-component form is
+  deliberate: patch *and* minor `standard_id` releases roll through without a
+  gemspec edit, avoiding the narrow-cap landmine of rarebit-one/rarebit-ops#278.
+
+### Added
+
+- **`compat` CI job.** Drops the lockfile, resolves against the latest
+  *published* `standard_id`, and fails with an actionable message if the
+  gemspec constraint excludes it — then runs the full suite against that
+  version. Matches the job `standard_id-apple` and `standard_id-google` carry.
+
 ### Fixed
 
 - **The dummy app now boots and the test suite runs.** `spec/dummy/config/database.yml`
