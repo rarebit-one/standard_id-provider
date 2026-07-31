@@ -7,6 +7,7 @@ require "standard_id/provider/extensions/token_grant_flow_ext"
 require "standard_id/provider/extensions/authorization_flow_ext"
 require "standard_id/provider/extensions/traditional_code_grant_ext"
 require "standard_id/provider/extensions/authorization_code_flow_ext"
+require "standard_id/provider/extensions/introspections_controller_ext"
 require "standard_id/provider/engine"
 
 module StandardId

@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING: `POST /api/provider/introspect` is gone.** `standard_id` 0.33.0
+  ships an RFC 7662 endpoint of its own at `POST /oauth/introspect`, and core's
+  is strictly more conformant: it renders `{"active": false}` and nothing else
+  for *every* failure (RFC 7662 §2.2), where this gem's answered 401 with an
+  error body on bad client credentials and 429 when throttled — the latter
+  turning the rate limiter into a token-validity oracle. Core's is also
+  404-gated behind `config.oauth.introspection_enabled`.
+
+  The one thing worth keeping — core cannot see this engine's
+  `RevokedToken` denylist, and says so ("this engine cannot invalidate a
+  stateless JWT before its exp") — is now **contributed into** core's endpoint
+  by `StandardId::Provider::Extensions::IntrospectionsControllerExt` rather than
+  served by a second endpoint with different answers. Set
+  `config.oauth.introspection_enabled = true`; the `RATE_LIMIT_INTROSPECT_PER_IP`
+  env override is replaced by `config.rate_limits.introspection_per_ip`.
+- **BREAKING: `config.provider.introspection_enabled` is removed.** It was
+  declared, documented as a switch, and read by nothing — the endpoint it
+  claimed to gate was always on. Use `config.oauth.introspection_enabled`.
+
+### Fixed
+
+- **The discovery document no longer hardcodes `/api`.** `DiscoveryController`
+  interpolated every endpoint as `"#{issuer}/api/authorize"` and friends — the
+  same defect core fixed in 0.33.0, wrong both because it assumed ApiEngine
+  sits at exactly `/api` and because it conflated the issuer (a stable security
+  identifier, RFC 8414 §2) with the endpoint base. The document is now built by
+  `StandardId::Oauth::DiscoveryDocument` from
+  `StandardId::Oauth::DiscoveryResolver`, so `config.oauth.discovery_endpoint_base`
+  and `config.oauth.discovery_metadata_overrides` both work and the document
+  cannot drift from the two core serves.
+
+  **Hosts serving this document must set `discovery_endpoint_base`.** Unlike
+  core's well-known controllers, this one is served from the *Provider* engine's
+  mount, so `request.script_name` is not ApiEngine's mount path and `:request`
+  would resolve to the origin root.
+- **`config.provider.revocation_enabled` is now actually enforced.** It had the
+  same never-read defect; `RevocationController` renders 404 when it is off.
+- The document no longer advertises `response_types_supported: token` (nothing
+  implements the implicit flow here) or `code_challenge_methods_supported: plain`
+  (core enforces PKCE with S256 and rejects `plain`). It also drops its
+  duplicate `id_token_signing_alg_values_supported`, which core derives from
+  `config.oauth.signing_algorithm`.
+
+### Changed
+
+- `revocation_endpoint` in the discovery document points at this engine's
+  `/api/provider/revoke` — built from the engine's route helper, so it follows
+  the mount — rather than core's `/oauth/revoke`, because this engine's is the
+  one that writes the denylist introspection consults.
+- The dummy app now configures a real `issuer`, a `discovery_endpoint_base` and
+  `oauth.introspection_enabled`, so the discovery and introspection paths are
+  exercised against realistic config instead of `nil`.
+
 ### Changed
 
 - **Tightened the `standard_id` dependency from `~> 0.3` to `~> 0.33`.** Both
